@@ -1,3 +1,6 @@
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <fstream>
@@ -20,10 +23,15 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
 			severity, message);
 }
 
+static void glfw_error_callback(int error, const char *description) {
+	fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+}
+
 int main() {
 	unsigned int VAO, VBO;
 	unsigned int vertexShader, fragmentShader, program;
 	unsigned int u_Model, u_View, u_Projection;
+	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit()) {
 		fprintf(stderr, "failed to init glfw\n");
 		return -1;
