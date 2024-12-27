@@ -148,7 +148,14 @@ int main() {
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
 		glDrawArrays(GL_TRIANGLES, 0, 3);
-		ImGui::ShowDemoWindow(&show_demo_window);
+		if (show_demo_window) {
+			ImGui::Begin("My Demo Window", &show_demo_window);
+			ImGui::Text("hello world");
+			if (ImGui::Button("close")) {
+				show_demo_window = false;
+			}
+			ImGui::End();
+		}
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(window);
