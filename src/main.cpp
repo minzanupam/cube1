@@ -130,6 +130,10 @@ int main() {
 
 	glUseProgram(program);
 
+	float camera_posz = 1.0f;
+	float f32_zero = 0.0f;
+	float f32_one = 1.0f;
+
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -138,7 +142,7 @@ int main() {
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT);
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
-		view = glm::lookAt(glm::vec3(0.0f, 1.0f, 1.0f),
+		view = glm::lookAt(glm::vec3(0.0f, 1.0f, camera_posz),
 						   glm::vec3(0.0f, 0.0f, 0.0f),
 						   glm::vec3(0.0f, 1.0f, 0.0f));
 		projection = glm::perspective(
@@ -148,9 +152,11 @@ int main() {
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+		// ImGui::ShowDemoWindow(&show_demo_window);
 		if (show_demo_window) {
 			ImGui::Begin("My Demo Window", &show_demo_window);
 			ImGui::Text("hello world");
+			ImGui::DragFloat("camera pos-z", &camera_posz, 0.005f);
 			if (ImGui::Button("close")) {
 				show_demo_window = false;
 			}
