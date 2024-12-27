@@ -108,9 +108,16 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
+		view = glm::lookAt(glm::vec3(0.0f, 1.0f, 1.0f),
+						   glm::vec3(0.0f, 0.0f, 0.0f),
+						   glm::vec3(0.0f, 1.0f, 0.0f));
+		projection = glm::perspective(
+			glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.01f, 100.0f);
 		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(u_Projection, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
+						   glm::value_ptr(projection));
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glfwPollEvents();
 		glfwSwapBuffers(window);
