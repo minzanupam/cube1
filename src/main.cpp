@@ -58,6 +58,21 @@ int main() {
 	};
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO &io = ImGui::GetIO();
+	(void)io;
+	io.ConfigFlags |=
+		ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+	io.ConfigFlags |=
+		ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	const char *glsl_version = "#version 330 core";
+	ImGui_ImplOpenGL3_Init(glsl_version);
+	bool show_demo_window = true;
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 	glEnableVertexAttribArray(0);
 
@@ -116,6 +131,11 @@ int main() {
 	glUseProgram(program);
 
 	while (!glfwWindowShouldClose(window)) {
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT);
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
 		view = glm::lookAt(glm::vec3(0.0f, 1.0f, 1.0f),
@@ -128,8 +148,18 @@ int main() {
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
 		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glfwPollEvents();
+		ImGui::ShowDemoWindow(&show_demo_window);
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(window);
 	}
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	glfwDestroyWindow(window);
+	glfwTerminate();
+
 	return 0;
 }
