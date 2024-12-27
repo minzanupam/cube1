@@ -130,9 +130,9 @@ int main() {
 
 	glUseProgram(program);
 
-	float camera_posz = 1.0f;
-	float f32_zero = 0.0f;
-	float f32_one = 1.0f;
+	glm::vec3 camera_eye = glm::vec3(0.0f, 1.0f, 1.0f);
+	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
+	float camera_fov = 45.0f;
 
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
@@ -142,11 +142,11 @@ int main() {
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT);
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
-		view = glm::lookAt(glm::vec3(0.0f, 1.0f, camera_posz),
-						   glm::vec3(0.0f, 0.0f, 0.0f),
-						   glm::vec3(0.0f, 1.0f, 0.0f));
-		projection = glm::perspective(
-			glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.01f, 100.0f);
+		view =
+			glm::lookAt(camera_eye, camera_center, glm::vec3(0.0f, 1.0f, 0.0f));
+		projection =
+			glm::perspective(glm::radians(camera_fov),
+							 (float)WIDTH / (float)HEIGHT, 0.01f, 100.0f);
 		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
@@ -154,9 +154,29 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		// ImGui::ShowDemoWindow(&show_demo_window);
 		if (show_demo_window) {
-			ImGui::Begin("My Demo Window", &show_demo_window);
-			ImGui::Text("hello world");
-			ImGui::DragFloat("camera pos-z", &camera_posz, 0.005f);
+			ImGui::Begin("Camera", &show_demo_window);
+			ImGui::BeginGroup();
+			{
+				ImGui::Text("eye pos");
+				ImGui::DragFloat("ce-x", &camera_eye.x, 0.05f);
+				ImGui::DragFloat("ce-y", &camera_eye.y, 0.05f);
+				ImGui::DragFloat("ce-z", &camera_eye.z, 0.05f);
+			}
+			ImGui::EndGroup();
+			ImGui::BeginGroup();
+			{
+				ImGui::Text("center pos");
+				ImGui::DragFloat("cc-x", &camera_center.x, 0.05f);
+				ImGui::DragFloat("cc-y", &camera_center.y, 0.05f);
+				ImGui::DragFloat("cc-z", &camera_center.z, 0.05f);
+			}
+			ImGui::EndGroup();
+			ImGui::BeginGroup();
+			{
+				ImGui::Text("camera other");
+				ImGui::DragFloat("fov", &camera_fov, 0.05f);
+			}
+			ImGui::EndGroup();
 			if (ImGui::Button("close")) {
 				show_demo_window = false;
 			}
