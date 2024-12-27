@@ -38,6 +38,7 @@ int main() {
 	}
 	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "cube1", NULL, NULL);
 	glfwMakeContextCurrent(window);
+	glfwSwapInterval(1); // enable vsync, sync framerate to monitor
 	if (glewInit() != GLEW_OK) {
 		fprintf(stderr, "failed to init glew\n");
 		return -1;
