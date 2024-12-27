@@ -1,6 +1,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <fstream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -20,6 +23,7 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
 int main() {
 	unsigned int VAO, VBO;
 	unsigned int vertexShader, fragmentShader, program;
+	unsigned int u_Model, u_View, u_Projection;
 	if (!glfwInit()) {
 		fprintf(stderr, "failed to init glfw\n");
 		return -1;
@@ -91,10 +95,22 @@ int main() {
 	}
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+
+	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 projection = glm::mat4(1.0f);
+
+	u_Model = glGetUniformLocation(program, "model");
+	u_View = glGetUniformLocation(program, "view");
+	u_Projection = glGetUniformLocation(program, "projection");
+
 	glUseProgram(program);
 
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
+		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(u_Projection, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glfwPollEvents();
 		glfwSwapBuffers(window);
