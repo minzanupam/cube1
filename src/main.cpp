@@ -70,7 +70,7 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	const char *glsl_version = "#version 330 core";
 	ImGui_ImplOpenGL3_Init(glsl_version);
-	bool show_demo_window = true;
+	bool show_demo_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
