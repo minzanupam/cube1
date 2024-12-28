@@ -52,9 +52,24 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	float vertices[] = {
-		-1.0f, -1.0f, 0.0f, ///
-		0.0f,  1.0f,  0.0f, ///
-		1.0f,  -1.0f, 0.0f, ///
+		-1.0f,
+		-1.0f,
+		0.0f, /// x
+		0.309426373877638,
+		0.7219948723811553,
+		0.618852747755276, /// normal
+		0.0f,
+		1.0f,
+		0.0f, /// y
+		0.309426373877638,
+		0.7219948723811553,
+		0.618852747755276, /// normal
+		1.0f,
+		-1.0f,
+		0.0f, /// z
+		0.309426373877638,
+		0.7219948723811553,
+		0.618852747755276 /// normal
 	};
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -70,10 +85,10 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	const char *glsl_version = "#version 330 core";
 	ImGui_ImplOpenGL3_Init(glsl_version);
-	bool show_demo_window = false;
+	bool show_demo_window = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), NULL);
 	glEnableVertexAttribArray(0);
 
 	int status, len;
