@@ -1,0 +1,13 @@
+teapot
+-------
+
+num_of_tris
+vertex1x vertex1y vertex1z
+normal1x normal1y normal1z
+vertex2x vertex2y vertex2z
+normal1x normal1y normal1z
+vertex3x vertex3y vertex3z
+normal1x normal1y normal1z
+
+vertex1x vertex1y vertex1z
+...
