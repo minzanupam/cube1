@@ -145,7 +145,7 @@ int main() {
 
 	glUseProgram(program);
 
-	glm::vec3 camera_eye = glm::vec3(0.0f, 1.0f, 1.0f);
+	glm::vec3 camera_eye = glm::vec3(0.0f, 0.0f, 3.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
 	float camera_fov = 45.0f;
 
