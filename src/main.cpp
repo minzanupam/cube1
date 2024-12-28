@@ -51,27 +51,23 @@ int main() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	float vertices[] = {
-		-1.0f,
-		-1.0f,
-		0.0f, /// x
-		0.309426373877638,
-		0.7219948723811553,
-		0.618852747755276, /// normal
-		0.0f,
-		1.0f,
-		0.0f, /// y
-		0.309426373877638,
-		0.7219948723811553,
-		0.618852747755276, /// normal
-		1.0f,
-		-1.0f,
-		0.0f, /// z
-		0.309426373877638,
-		0.7219948723811553,
-		0.618852747755276 /// normal
-	};
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	FILE *asset_file = fopen("../assets/teapot_bezier0.norm.txt", "r");
+	if (asset_file == NULL) {
+		fprintf(stderr, "failed to open asset file\n");
+		return -1;
+	}
+	int asset_triangle_count;
+	fscanf(asset_file, "%d", &asset_triangle_count);
+	float *asset_vertices =
+		(float *)malloc(18 * sizeof(float) * asset_triangle_count);
+	for (int i = 0; i < asset_triangle_count * 18; i += 6) {
+		fscanf(asset_file, "%f %f %f", &asset_vertices[i],
+			   &asset_vertices[i + 1], &asset_vertices[i + 2]);
+		fscanf(asset_file, "%f %f %f", &asset_vertices[i + 3],
+			   &asset_vertices[i + 4], &asset_vertices[i + 5]);
+	}
+	glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float) * asset_triangle_count,
+				 asset_vertices, GL_STATIC_DRAW);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -166,7 +162,7 @@ int main() {
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 3 * asset_triangle_count);
 		// ImGui::ShowDemoWindow(&show_demo_window);
 		if (show_demo_window) {
 			ImGui::Begin("Camera", &show_demo_window);
