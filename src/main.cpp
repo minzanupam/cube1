@@ -28,7 +28,8 @@ static void glfw_error_callback(int error, const char *description) {
 }
 
 int main() {
-	unsigned int VAO, VBO;
+	unsigned int VAO_asset, VBO_asset;
+	unsigned int VAO_lightcube, VBO_lightcube, EBO_lightcube;
 	unsigned int vertexShader, fragmentShader, program;
 	unsigned int u_Model, u_View, u_Projection;
 	glfwSetErrorCallback(glfw_error_callback);
@@ -46,10 +47,10 @@ int main() {
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(MessageCallback, 0);
 
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glGenVertexArrays(1, &VAO_asset);
+	glGenBuffers(1, &VBO_asset);
+	glBindVertexArray(VAO_asset);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_asset);
 
 	FILE *asset_file = fopen("../assets/teapot_bezier0.norm.txt", "r");
 	if (asset_file == NULL) {
@@ -69,6 +70,55 @@ int main() {
 	glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float) * asset_triangle_count,
 				 asset_vertices, GL_STATIC_DRAW);
 
+	float vertices_lightcube[] = {
+		// Front face
+		0.5f, 0.5f, 0.5f,	// Top right of the front face
+		0.5f, -0.5f, 0.5f,	// Bottom right of the front face
+		-0.5f, -0.5f, 0.5f, // Bottom left of the front face
+		-0.5f, 0.5f, 0.5f,	// Top left of the front face
+
+		// Back face
+		0.5f, 0.5f, -0.5f,	 // Top right of the back face
+		0.5f, -0.5f, -0.5f,	 // Bottom right of the back face
+		-0.5f, -0.5f, -0.5f, // Bottom left of the back face
+		-0.5f, 0.5f, -0.5f	 // Top left of the back face
+	};
+	unsigned int indices_lightcube[] = {
+		// Front face
+		0, 1, 3, // First triangle
+		1, 2, 3, // Second triangle
+
+		// Back face
+		4, 5, 7, // First triangle
+		5, 6, 7, // Second triangle
+
+		// Top face
+		0, 1, 5, // First triangle
+		1, 4, 5, // Second triangle
+
+		// Bottom face
+		2, 3, 7, // First triangle
+		3, 6, 7, // Second triangle
+
+		// Left face
+		0, 3, 7, // First triangle
+		0, 7, 4, // Second triangle
+
+		// Right face
+		1, 2, 6, // First triangle
+		2, 5, 6	 // Second triangle
+	};
+	glGenVertexArrays(1, &VAO_lightcube);
+	glBindVertexArray(VAO_lightcube);
+	glGenBuffers(1, &VBO_lightcube);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_lightcube);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_lightcube),
+				 vertices_lightcube, GL_STATIC_DRAW);
+	glGenBuffers(1, &EBO_lightcube);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_lightcube);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_lightcube),
+				 indices_lightcube, GL_STATIC_DRAW);
+
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO &io = ImGui::GetIO();
@@ -83,9 +133,6 @@ int main() {
 	ImGui_ImplOpenGL3_Init(glsl_version);
 	bool show_demo_window = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), NULL);
-	glEnableVertexAttribArray(0);
 
 	int status, len;
 #define SHADER_ERROR_LOG_LEN 1024
@@ -162,6 +209,12 @@ int main() {
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
+
+		glBindVertexArray(VAO_asset);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_asset);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+							  NULL);
+		glEnableVertexAttribArray(0);
 		glDrawArrays(GL_TRIANGLES, 0, 3 * asset_triangle_count);
 		// ImGui::ShowDemoWindow(&show_demo_window);
 		if (show_demo_window) {
