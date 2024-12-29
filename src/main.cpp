@@ -205,17 +205,30 @@ int main() {
 		projection =
 			glm::perspective(glm::radians(camera_fov),
 							 (float)WIDTH / (float)HEIGHT, 0.01f, 100.0f);
+		glBindVertexArray(VAO_asset);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_asset);
 		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
-
-		glBindVertexArray(VAO_asset);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_asset);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 							  NULL);
 		glEnableVertexAttribArray(0);
 		glDrawArrays(GL_TRIANGLES, 0, 3 * asset_triangle_count);
+
+		glBindVertexArray(VAO_lightcube);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_lightcube);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_lightcube);
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 5.0f, -3.0f));
+		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
+						   glm::value_ptr(projection));
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+							  NULL);
+		glEnableVertexAttribArray(0);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
 		// ImGui::ShowDemoWindow(&show_demo_window);
 		if (show_demo_window) {
 			ImGui::Begin("Camera", &show_demo_window);
