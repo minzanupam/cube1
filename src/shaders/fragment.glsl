@@ -1,5 +1,6 @@
 #version 330 core
 
+in vec3 frag_pos;
 in vec3 frag_nor;
 
 out vec3 color;
