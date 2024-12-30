@@ -290,6 +290,14 @@ int main() {
 			ImGui::EndGroup();
 			ImGui::BeginGroup();
 			{
+				ImGui::Text("object color");
+				ImGui::DragFloat("oc-r", &objectColor.r, 0.05f);
+				ImGui::DragFloat("oc-g", &objectColor.g, 0.05f);
+				ImGui::DragFloat("oc-b", &objectColor.b, 0.05f);
+			}
+			ImGui::EndGroup();
+			ImGui::BeginGroup();
+			{
 				ImGui::Text("camera other");
 				ImGui::DragFloat("fov", &camera_fov, 0.05f);
 			}
