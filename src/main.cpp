@@ -13,6 +13,7 @@
 
 #define WIDTH 1280
 #define HEIGHT 720
+#define SHADER_ERROR_LOG_LEN 1024
 
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
 								GLenum severity, GLsizei length,
@@ -25,6 +26,26 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
 
 static void glfw_error_callback(int error, const char *description) {
 	fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+}
+
+unsigned int load_shader(const char *path, GLenum type) {
+	unsigned int shader;
+	int status, len;
+	char log[SHADER_ERROR_LOG_LEN];
+	std::ifstream fs_shader(path);
+	std::stringstream ss_shader;
+	ss_shader << fs_shader.rdbuf();
+	std::string s_shader = ss_shader.str();
+	const char *c_shader = s_shader.c_str();
+	shader = glCreateShader(type);
+	glShaderSource(shader, 1, &c_shader, NULL);
+	glCompileShader(shader);
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+	if (status == GL_FALSE) {
+		glGetShaderInfoLog(shader, SHADER_ERROR_LOG_LEN, &len, log);
+		std::cout << log << std::endl;
+	}
+	return shader;
 }
 
 int main() {
@@ -134,37 +155,12 @@ int main() {
 	bool show_demo_window = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+	vertexShader = load_shader("../src/shaders/vertex.glsl", GL_VERTEX_SHADER);
+	fragmentShader =
+		load_shader("../src/shaders/fragment.glsl", GL_FRAGMENT_SHADER);
+
 	int status, len;
-#define SHADER_ERROR_LOG_LEN 1024
 	char log[SHADER_ERROR_LOG_LEN];
-
-	std::ifstream fs_vertexShader("../src/shaders/vertex.glsl");
-	std::stringstream ss_vertexShader;
-	ss_vertexShader << fs_vertexShader.rdbuf();
-	std::string s_vertexShader = ss_vertexShader.str();
-	const char *c_vertexShader = s_vertexShader.c_str();
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &c_vertexShader, NULL);
-	glCompileShader(vertexShader);
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
-	if (status == GL_FALSE) {
-		glGetShaderInfoLog(vertexShader, SHADER_ERROR_LOG_LEN, &len, log);
-		std::cout << log << std::endl;
-	}
-
-	std::ifstream fs_fragmentShader("../src/shaders/fragment.glsl");
-	std::stringstream ss_fragmentShader;
-	ss_fragmentShader << fs_fragmentShader.rdbuf();
-	std::string s_fragmentShader = ss_fragmentShader.str();
-	const char *c_fragmentShader = s_fragmentShader.c_str();
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &c_fragmentShader, NULL);
-	glCompileShader(fragmentShader);
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
-	if (status == GL_FALSE) {
-		glGetShaderInfoLog(fragmentShader, SHADER_ERROR_LOG_LEN, &len, log);
-		std::cout << log << std::endl;
-	}
 
 	program = glCreateProgram();
 	glAttachShader(program, vertexShader);
