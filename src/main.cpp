@@ -212,7 +212,7 @@ int main() {
 	glm::vec3 camera_eye = glm::vec3(0.0f, 0.0f, 15.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
 	float camera_fov = 45.0f;
-	glm::vec3 lightcube_pos = glm::vec3(5.0f, 5.0f, -3.0f);
+	glm::vec3 lightcube_pos = glm::vec3(5.0f, 5.0f, 3.0f);
 
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
