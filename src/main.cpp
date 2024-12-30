@@ -174,6 +174,23 @@ int main() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
+	unsigned int vertexShader_lightcube =
+		load_shader("../src/shaders/vertex_lightcube.glsl", GL_VERTEX_SHADER);
+	unsigned int fragmentShader_lightcube = load_shader(
+		"../src/shaders/fragment_lightcube.glsl", GL_FRAGMENT_SHADER);
+
+	unsigned int program_lightcube = glCreateProgram();
+	glAttachShader(program_lightcube, vertexShader_lightcube);
+	glAttachShader(program_lightcube, fragmentShader_lightcube);
+	glLinkProgram(program_lightcube);
+	glGetProgramiv(program_lightcube, GL_LINK_STATUS, &status);
+	if (status == GL_FALSE) {
+		glGetProgramInfoLog(program, SHADER_ERROR_LOG_LEN, &len, log);
+		std::cout << log << std::endl;
+	}
+	glDeleteShader(vertexShader_lightcube);
+	glDeleteShader(fragmentShader_lightcube);
+
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::mat4(1.0f);
@@ -181,8 +198,6 @@ int main() {
 	u_Model = glGetUniformLocation(program, "model");
 	u_View = glGetUniformLocation(program, "view");
 	u_Projection = glGetUniformLocation(program, "projection");
-
-	glUseProgram(program);
 
 	glm::vec3 camera_eye = glm::vec3(0.0f, 0.0f, 15.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -201,6 +216,8 @@ int main() {
 		projection =
 			glm::perspective(glm::radians(camera_fov),
 							 (float)WIDTH / (float)HEIGHT, 0.01f, 100.0f);
+
+		glUseProgram(program);
 		glBindVertexArray(VAO_asset);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_asset);
 		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
@@ -212,6 +229,7 @@ int main() {
 		glEnableVertexAttribArray(0);
 		glDrawArrays(GL_TRIANGLES, 0, 3 * asset_triangle_count);
 
+		glUseProgram(program_lightcube);
 		glBindVertexArray(VAO_lightcube);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_lightcube);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_lightcube);
