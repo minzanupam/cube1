@@ -5,7 +5,8 @@ in vec3 nor;
 out vec3 color;
 
 uniform float ambient_light;
+uniform vec3 object_color;
 
 void main() {
-	color = nor * ambient_light;
+	color = ambient_light * object_color;
 }
