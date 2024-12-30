@@ -53,6 +53,7 @@ int main() {
 	unsigned int VAO_lightcube, VBO_lightcube, EBO_lightcube;
 	unsigned int vertexShader, fragmentShader, program;
 	unsigned int u_Model, u_View, u_Projection;
+	unsigned int u_ambientLight;
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit()) {
 		fprintf(stderr, "failed to init glfw\n");
@@ -194,10 +195,12 @@ int main() {
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::mat4(1.0f);
+	float ambientLight = 0.1f;
 
 	u_Model = glGetUniformLocation(program, "model");
 	u_View = glGetUniformLocation(program, "view");
 	u_Projection = glGetUniformLocation(program, "projection");
+	u_ambientLight = glGetUniformLocation(program, "ambient_light");
 
 	glm::vec3 camera_eye = glm::vec3(0.0f, 0.0f, 15.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -225,6 +228,7 @@ int main() {
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
+		glUniform1f(u_ambientLight, ambientLight);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 							  NULL);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
