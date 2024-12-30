@@ -227,7 +227,10 @@ int main() {
 						   glm::value_ptr(projection));
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 							  NULL);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+							  (void *)(3 * sizeof(float)));
 		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
 		glDrawArrays(GL_TRIANGLES, 0, 3 * asset_triangle_count);
 
 		glUseProgram(program_lightcube);
