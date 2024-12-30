@@ -10,5 +10,8 @@ uniform vec3 object_color;
 uniform vec3 light_pos;
 
 void main() {
-	color = ambient_light * object_color;
+	vec3 light_direction = normalize(light_pos - frag_pos);
+	vec3 normal = normalize(frag_nor);
+	float diffuse_light = max(dot(normal, light_direction), 0.0);
+	color = (ambient_light + diffuse_light) * object_color;
 }
