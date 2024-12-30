@@ -70,6 +70,8 @@ int main() {
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(MessageCallback, 0);
 
+	glEnable(GL_DEPTH_TEST);
+
 	glGenVertexArrays(1, &VAO_asset);
 	glGenBuffers(1, &VBO_asset);
 	glBindVertexArray(VAO_asset);
@@ -217,7 +219,7 @@ int main() {
 		ImGui::NewFrame();
 
 		glfwPollEvents();
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
 		view =
 			glm::lookAt(camera_eye, camera_center, glm::vec3(0.0f, 1.0f, 0.0f));
