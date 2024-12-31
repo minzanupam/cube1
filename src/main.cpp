@@ -318,14 +318,6 @@ int main() {
 			ImGui::EndGroup();
 			ImGui::BeginGroup();
 			{
-				ImGui::Text("light color");
-				ImGui::DragFloat("lc-r", &lightcube_pos.x, 0.05f);
-				ImGui::DragFloat("lc-g", &lightcube_pos.y, 0.05f);
-				ImGui::DragFloat("lc-b", &lightcube_pos.z, 0.05f);
-			}
-			ImGui::EndGroup();
-			ImGui::BeginGroup();
-			{
 				ImGui::Text("camera other");
 				ImGui::DragFloat("fov", &camera_fov, 0.05f);
 			}
