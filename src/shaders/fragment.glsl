@@ -16,8 +16,8 @@ void main() {
 	vec3 normal = normalize(frag_nor);
 	vec3 view_direction = normalize(camera_pos - frag_pos);
 	vec3 reflection_direction = reflect(-light_direction, normal);
-	float specular_strength = 0.5 * pow(max(dot(view_direction, reflection_direction), 0.0), 32);
-	float diffuse_strength = max(dot(normal, light_direction), 0.0);
-	vec3 light_output = (ambient_strength + diffuse_strength + specular_strength) * light_color;
-	color = light_output * object_color;
+	vec3 ambient = ambient_strength * light_color;
+	vec3 specular = (0.5 * pow(max(dot(view_direction, reflection_direction), 0.0), 32)) * light_color;
+	vec3 diffuse = max(dot(normal, light_direction), 0.0) * light_color;
+	color = (ambient + diffuse + specular) * object_color;
 }
