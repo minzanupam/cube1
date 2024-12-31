@@ -94,45 +94,46 @@ int main() {
 	}
 	glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float) * asset_triangle_count,
 				 asset_vertices, GL_STATIC_DRAW);
-
 	float vertices_lightcube[] = {
 		// Front face
-		0.5f, 0.5f, 0.5f,	// Top right of the front face
-		0.5f, -0.5f, 0.5f,	// Bottom right of the front face
-		-0.5f, -0.5f, 0.5f, // Bottom left of the front face
-		-0.5f, 0.5f, 0.5f,	// Top left of the front face
+		-0.5f, -0.5f, 0.5f, // Vertex 0
+		0.5f, -0.5f, 0.5f,	// Vertex 1
+		0.5f, 0.5f, 0.5f,	// Vertex 2
+		-0.5f, 0.5f, 0.5f,	// Vertex 3
 
 		// Back face
-		0.5f, 0.5f, -0.5f,	 // Top right of the back face
-		0.5f, -0.5f, -0.5f,	 // Bottom right of the back face
-		-0.5f, -0.5f, -0.5f, // Bottom left of the back face
-		-0.5f, 0.5f, -0.5f	 // Top left of the back face
+		-0.5f, -0.5f, -0.5f, // Vertex 4
+		0.5f, -0.5f, -0.5f,	 // Vertex 5
+		0.5f, 0.5f, -0.5f,	 // Vertex 6
+		-0.5f, 0.5f, -0.5f,	 // Vertex 7
 	};
+
 	unsigned int indices_lightcube[] = {
 		// Front face
-		0, 1, 3, // First triangle
-		1, 2, 3, // Second triangle
+		0, 1, 2, // Triangle 1
+		2, 3, 0, // Triangle 2
 
 		// Back face
-		4, 5, 7, // First triangle
-		5, 6, 7, // Second triangle
+		4, 5, 6, // Triangle 1
+		6, 7, 4, // Triangle 2
 
 		// Top face
-		0, 1, 5, // First triangle
-		1, 4, 5, // Second triangle
+		3, 2, 6, // Triangle 1
+		6, 7, 3, // Triangle 2
 
 		// Bottom face
-		2, 3, 7, // First triangle
-		3, 6, 7, // Second triangle
+		0, 1, 5, // Triangle 1
+		5, 4, 0, // Triangle 2
 
 		// Left face
-		0, 3, 7, // First triangle
-		0, 7, 4, // Second triangle
+		0, 3, 7, // Triangle 1
+		7, 4, 0, // Triangle 2
 
 		// Right face
-		1, 2, 6, // First triangle
-		2, 5, 6	 // Second triangle
+		1, 2, 6, // Triangle 1
+		6, 5, 1	 // Triangle 2
 	};
+
 	glGenVertexArrays(1, &VAO_lightcube);
 	glBindVertexArray(VAO_lightcube);
 	glGenBuffers(1, &VBO_lightcube);
@@ -221,6 +222,7 @@ int main() {
 
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.04313725, 0.1803921, 0.1607843, 1.0);
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
 		view =
 			glm::lookAt(camera_eye, camera_center, glm::vec3(0.0f, 1.0f, 0.0f));
