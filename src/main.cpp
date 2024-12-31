@@ -53,8 +53,8 @@ int main() {
 	unsigned int VAO_lightcube, VBO_lightcube, EBO_lightcube;
 	unsigned int vertexShader, fragmentShader, program;
 	unsigned int u_Model, u_View, u_Projection;
-	unsigned int u_objectColor;
-	unsigned int u_ambientLight, u_lightPos, u_cameraPos;
+	unsigned int u_objectColor, u_lightColor;
+	unsigned int u_ambientStrength, u_lightPos, u_cameraPos;
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit()) {
 		fprintf(stderr, "failed to init glfw\n");
@@ -205,15 +205,17 @@ int main() {
 	u_Model = glGetUniformLocation(program, "model");
 	u_View = glGetUniformLocation(program, "view");
 	u_Projection = glGetUniformLocation(program, "projection");
-	u_ambientLight = glGetUniformLocation(program, "ambient_light");
+	u_ambientStrength = glGetUniformLocation(program, "ambient_strength");
 	u_objectColor = glGetUniformLocation(program, "object_color");
 	u_lightPos = glGetUniformLocation(program, "light_pos");
 	u_cameraPos = glGetUniformLocation(program, "camera_pos");
+	u_lightColor = glGetUniformLocation(program, "light_color");
 
 	glm::vec3 camera_eye = glm::vec3(0.0f, 0.0f, 15.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
 	float camera_fov = 45.0f;
 	glm::vec3 lightcube_pos = glm::vec3(5.0f, 5.0f, 3.5f);
+	glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
@@ -237,10 +239,11 @@ int main() {
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
-		glUniform1f(u_ambientLight, ambientLight);
+		glUniform1f(u_ambientStrength, ambientLight);
 		glUniform3fv(u_objectColor, 1, glm::value_ptr(objectColor));
 		glUniform3fv(u_lightPos, 1, glm::value_ptr(lightcube_pos));
 		glUniform3fv(u_cameraPos, 1, glm::value_ptr(camera_eye));
+		glUniform3fv(u_lightColor, 1, glm::value_ptr(light_color));
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 							  NULL);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
