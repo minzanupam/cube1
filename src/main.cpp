@@ -53,8 +53,10 @@ int main() {
 	unsigned int VAO_lightcube, VBO_lightcube, EBO_lightcube;
 	unsigned int vertexShader, fragmentShader, program;
 	unsigned int u_Model, u_View, u_Projection;
-	unsigned int u_objectColor, u_lightColor;
-	unsigned int u_ambientStrength, u_lightPos, u_cameraPos;
+	unsigned int u_lightColor, u_lightPos, u_cameraPos;
+	unsigned int u_MaterialAmbient, u_MaterialDiffuse, u_MaterialSpecular,
+		u_MaterialShininess;
+
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit()) {
 		fprintf(stderr, "failed to init glfw\n");
@@ -199,17 +201,17 @@ int main() {
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::mat4(1.0f);
-	float ambientLight = 0.1f;
-	glm::vec3 objectColor = glm::vec3(0.392156, 0.21176, 0.0);
 
 	u_Model = glGetUniformLocation(program, "model");
 	u_View = glGetUniformLocation(program, "view");
 	u_Projection = glGetUniformLocation(program, "projection");
-	u_ambientStrength = glGetUniformLocation(program, "ambient_strength");
-	u_objectColor = glGetUniformLocation(program, "object_color");
 	u_lightPos = glGetUniformLocation(program, "light_pos");
 	u_cameraPos = glGetUniformLocation(program, "camera_pos");
 	u_lightColor = glGetUniformLocation(program, "light_color");
+	u_MaterialAmbient = glGetUniformLocation(program, "material.ambient");
+	u_MaterialDiffuse = glGetUniformLocation(program, "material.diffuse");
+	u_MaterialSpecular = glGetUniformLocation(program, "material.specular");
+	u_MaterialShininess = glGetUniformLocation(program, "material.shininess");
 
 	glm::vec3 camera_eye = glm::vec3(0.0f, 0.0f, 15.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -239,11 +241,17 @@ int main() {
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
-		glUniform1f(u_ambientStrength, ambientLight);
-		glUniform3fv(u_objectColor, 1, glm::value_ptr(objectColor));
 		glUniform3fv(u_lightPos, 1, glm::value_ptr(lightcube_pos));
 		glUniform3fv(u_cameraPos, 1, glm::value_ptr(camera_eye));
 		glUniform3fv(u_lightColor, 1, glm::value_ptr(light_color));
+		glUniform3fv(u_MaterialAmbient, 1,
+					 glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
+		glUniform3fv(u_MaterialDiffuse, 1,
+					 glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
+		glUniform3fv(u_MaterialSpecular, 1,
+					 glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
+		glUniform1f(u_MaterialShininess, 32.0f);
+
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 							  NULL);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
@@ -291,14 +299,6 @@ int main() {
 				ImGui::DragFloat("lc-x", &lightcube_pos.x, 0.05f);
 				ImGui::DragFloat("lc-y", &lightcube_pos.y, 0.05f);
 				ImGui::DragFloat("lc-z", &lightcube_pos.z, 0.05f);
-			}
-			ImGui::EndGroup();
-			ImGui::BeginGroup();
-			{
-				ImGui::Text("object color");
-				ImGui::DragFloat("oc-r", &objectColor.r, 0.05f);
-				ImGui::DragFloat("oc-g", &objectColor.g, 0.05f);
-				ImGui::DragFloat("oc-b", &objectColor.b, 0.05f);
 			}
 			ImGui::EndGroup();
 			ImGui::BeginGroup();
