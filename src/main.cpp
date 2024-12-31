@@ -222,6 +222,10 @@ int main() {
 	float camera_fov = 45.0f;
 	glm::vec3 lightcube_pos = glm::vec3(5.0f, 5.0f, 3.5f);
 
+	float copper[10] = {// ambient 3, diffuse 3, specular 3, shininess 1
+						0.19125, 0.0735,   0.0225,	 0.7038,   0.27048,
+						0.0828,	 0.256777, 0.137622, 0.086014, 0.1};
+
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -245,13 +249,16 @@ int main() {
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
 		glUniform3fv(u_cameraPos, 1, glm::value_ptr(camera_eye));
-		glUniform3fv(u_MaterialAmbient, 1,
-					 glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
-		glUniform3fv(u_MaterialDiffuse, 1,
-					 glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
-		glUniform3fv(u_MaterialSpecular, 1,
-					 glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
-		glUniform1f(u_MaterialShininess, 32.0f);
+		glUniform3fv(
+			u_MaterialAmbient, 1,
+			glm::value_ptr(glm::vec3(copper[0], copper[1], copper[2])));
+		glUniform3fv(
+			u_MaterialDiffuse, 1,
+			glm::value_ptr(glm::vec3(copper[3], copper[4], copper[5])));
+		glUniform3fv(
+			u_MaterialSpecular, 1,
+			glm::value_ptr(glm::vec3(copper[6], copper[7], copper[8])));
+		glUniform1f(u_MaterialShininess, copper[9]);
 		glUniform3fv(u_LightPosition, 1, glm::value_ptr(lightcube_pos));
 		glUniform3fv(u_LightAmbient, 1,
 					 glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
@@ -307,6 +314,14 @@ int main() {
 				ImGui::DragFloat("lc-x", &lightcube_pos.x, 0.05f);
 				ImGui::DragFloat("lc-y", &lightcube_pos.y, 0.05f);
 				ImGui::DragFloat("lc-z", &lightcube_pos.z, 0.05f);
+			}
+			ImGui::EndGroup();
+			ImGui::BeginGroup();
+			{
+				ImGui::Text("light color");
+				ImGui::DragFloat("lc-r", &lightcube_pos.x, 0.05f);
+				ImGui::DragFloat("lc-g", &lightcube_pos.y, 0.05f);
+				ImGui::DragFloat("lc-b", &lightcube_pos.z, 0.05f);
 			}
 			ImGui::EndGroup();
 			ImGui::BeginGroup();
