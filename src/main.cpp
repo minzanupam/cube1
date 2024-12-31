@@ -53,9 +53,11 @@ int main() {
 	unsigned int VAO_lightcube, VBO_lightcube, EBO_lightcube;
 	unsigned int vertexShader, fragmentShader, program;
 	unsigned int u_Model, u_View, u_Projection;
-	unsigned int u_lightColor, u_lightPos, u_cameraPos;
+	unsigned int u_cameraPos;
 	unsigned int u_MaterialAmbient, u_MaterialDiffuse, u_MaterialSpecular,
 		u_MaterialShininess;
+	unsigned int u_LightPosition, u_LightAmbient, u_LightDiffuse,
+		u_LightSpecular;
 
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit()) {
@@ -205,19 +207,20 @@ int main() {
 	u_Model = glGetUniformLocation(program, "model");
 	u_View = glGetUniformLocation(program, "view");
 	u_Projection = glGetUniformLocation(program, "projection");
-	u_lightPos = glGetUniformLocation(program, "light_pos");
 	u_cameraPos = glGetUniformLocation(program, "camera_pos");
-	u_lightColor = glGetUniformLocation(program, "light_color");
 	u_MaterialAmbient = glGetUniformLocation(program, "material.ambient");
 	u_MaterialDiffuse = glGetUniformLocation(program, "material.diffuse");
 	u_MaterialSpecular = glGetUniformLocation(program, "material.specular");
 	u_MaterialShininess = glGetUniformLocation(program, "material.shininess");
+	u_LightPosition = glGetUniformLocation(program, "light.position");
+	u_LightAmbient = glGetUniformLocation(program, "light.ambient");
+	u_LightDiffuse = glGetUniformLocation(program, "light.diffuse");
+	u_LightSpecular = glGetUniformLocation(program, "light.specular");
 
 	glm::vec3 camera_eye = glm::vec3(0.0f, 0.0f, 15.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
 	float camera_fov = 45.0f;
 	glm::vec3 lightcube_pos = glm::vec3(5.0f, 5.0f, 3.5f);
-	glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
@@ -241,9 +244,7 @@ int main() {
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
-		glUniform3fv(u_lightPos, 1, glm::value_ptr(lightcube_pos));
 		glUniform3fv(u_cameraPos, 1, glm::value_ptr(camera_eye));
-		glUniform3fv(u_lightColor, 1, glm::value_ptr(light_color));
 		glUniform3fv(u_MaterialAmbient, 1,
 					 glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
 		glUniform3fv(u_MaterialDiffuse, 1,
@@ -251,6 +252,13 @@ int main() {
 		glUniform3fv(u_MaterialSpecular, 1,
 					 glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
 		glUniform1f(u_MaterialShininess, 32.0f);
+		glUniform3fv(u_LightPosition, 1, glm::value_ptr(lightcube_pos));
+		glUniform3fv(u_LightAmbient, 1,
+					 glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
+		glUniform3fv(u_LightDiffuse, 1,
+					 glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
+		glUniform3fv(u_LightSpecular, 1,
+					 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 							  NULL);
