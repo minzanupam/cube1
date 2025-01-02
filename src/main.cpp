@@ -306,6 +306,8 @@ int main() {
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
+		// Value for these are essentially copies of the values used
+		// in the light asset.
 		glUniform3fv(u_LightPosition_lightcube, 1,
 					 glm::value_ptr(lightcube_pos));
 		glUniform3fv(u_LightAmbient_lightcube, 1,
