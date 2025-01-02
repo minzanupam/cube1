@@ -15,6 +15,20 @@
 #define HEIGHT 720
 #define SHADER_ERROR_LOG_LEN 1024
 
+struct UMaterial {
+	unsigned int ambient;
+	unsigned int diffuse;
+	unsigned int specular;
+	unsigned int shininess;
+};
+
+struct ULight {
+	unsigned int position;
+	unsigned int ambient;
+	unsigned int diffuse;
+	unsigned int specular;
+};
+
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
 								GLenum severity, GLsizei length,
 								const GLchar *message, const void *userParam) {
@@ -54,10 +68,8 @@ int main() {
 	unsigned int vertexShader, fragmentShader, program;
 	unsigned int u_Model, u_View, u_Projection;
 	unsigned int u_cameraPos;
-	unsigned int u_MaterialAmbient, u_MaterialDiffuse, u_MaterialSpecular,
-		u_MaterialShininess;
-	unsigned int u_LightPosition, u_LightAmbient, u_LightDiffuse,
-		u_LightSpecular;
+	struct UMaterial u_Material;
+	struct ULight u_Light;
 
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit()) {
@@ -209,14 +221,14 @@ int main() {
 	u_View = glGetUniformLocation(program, "view");
 	u_Projection = glGetUniformLocation(program, "projection");
 	u_cameraPos = glGetUniformLocation(program, "camera_pos");
-	u_MaterialAmbient = glGetUniformLocation(program, "material.ambient");
-	u_MaterialDiffuse = glGetUniformLocation(program, "material.diffuse");
-	u_MaterialSpecular = glGetUniformLocation(program, "material.specular");
-	u_MaterialShininess = glGetUniformLocation(program, "material.shininess");
-	u_LightPosition = glGetUniformLocation(program, "light.position");
-	u_LightAmbient = glGetUniformLocation(program, "light.ambient");
-	u_LightDiffuse = glGetUniformLocation(program, "light.diffuse");
-	u_LightSpecular = glGetUniformLocation(program, "light.specular");
+	u_Material.ambient = glGetUniformLocation(program, "material.ambient");
+	u_Material.diffuse = glGetUniformLocation(program, "material.diffuse");
+	u_Material.specular = glGetUniformLocation(program, "material.specular");
+	u_Material.shininess = glGetUniformLocation(program, "material.shininess");
+	u_Light.position = glGetUniformLocation(program, "light.position");
+	u_Light.ambient = glGetUniformLocation(program, "light.ambient");
+	u_Light.diffuse = glGetUniformLocation(program, "light.diffuse");
+	u_Light.specular = glGetUniformLocation(program, "light.specular");
 
 	unsigned int u_LightPosition_lightcube =
 		glGetUniformLocation(program_lightcube, "light.position");
@@ -260,21 +272,21 @@ int main() {
 						   glm::value_ptr(projection));
 		glUniform3fv(u_cameraPos, 1, glm::value_ptr(camera_eye));
 		glUniform3fv(
-			u_MaterialAmbient, 1,
+			u_Material.ambient, 1,
 			glm::value_ptr(glm::vec3(copper[0], copper[1], copper[2])));
 		glUniform3fv(
-			u_MaterialDiffuse, 1,
+			u_Material.diffuse, 1,
 			glm::value_ptr(glm::vec3(copper[3], copper[4], copper[5])));
 		glUniform3fv(
-			u_MaterialSpecular, 1,
+			u_Material.specular, 1,
 			glm::value_ptr(glm::vec3(copper[6], copper[7], copper[8])));
-		glUniform1f(u_MaterialShininess, 128.0f * copper[9]);
-		glUniform3fv(u_LightPosition, 1, glm::value_ptr(lightcube_pos));
-		glUniform3fv(u_LightAmbient, 1,
+		glUniform1f(u_Material.shininess, 128.0f * copper[9]);
+		glUniform3fv(u_Light.position, 1, glm::value_ptr(lightcube_pos));
+		glUniform3fv(u_Light.ambient, 1,
 					 glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
-		glUniform3fv(u_LightDiffuse, 1,
+		glUniform3fv(u_Light.diffuse, 1,
 					 glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
-		glUniform3fv(u_LightSpecular, 1,
+		glUniform3fv(u_Light.specular, 1,
 					 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
