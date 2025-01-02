@@ -5,6 +5,7 @@ project(Cube)
 set(IMGUI_DIR libs/imgui-1.91.1)
 
 add_executable(${CMAKE_PROJECT_NAME} src/main.cpp
+	src/imgui_demo_window.cpp
 	${IMGUI_DIR}/imgui.cpp
 	${IMGUI_DIR}/imgui_demo.cpp
 	${IMGUI_DIR}/imgui_draw.cpp
