@@ -217,6 +217,15 @@ int main() {
 	u_LightDiffuse = glGetUniformLocation(program, "light.diffuse");
 	u_LightSpecular = glGetUniformLocation(program, "light.specular");
 
+	unsigned int u_LightPosition_lightcube =
+		glGetUniformLocation(program_lightcube, "light.position");
+	unsigned int u_LightAmbient_lightcube =
+		glGetUniformLocation(program_lightcube, "light.ambient");
+	unsigned int u_LightDiffuse_lightcube =
+		glGetUniformLocation(program_lightcube, "light.diffuse");
+	unsigned int u_LightSpecular_lightcube =
+		glGetUniformLocation(program_lightcube, "light.specular");
+
 	glm::vec3 camera_eye = glm::vec3(0.0f, 0.0f, 8.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
 	float camera_fov = 45.0f;
@@ -284,6 +293,15 @@ int main() {
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
 						   glm::value_ptr(projection));
+		glUniform3fv(u_LightPosition_lightcube, 1,
+					 glm::value_ptr(lightcube_pos));
+		glUniform3fv(u_LightAmbient_lightcube, 1,
+					 glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
+		glUniform3fv(u_LightDiffuse_lightcube, 1,
+					 glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
+		glUniform3fv(u_LightSpecular_lightcube, 1,
+					 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
 							  NULL);
 		glEnableVertexAttribArray(0);

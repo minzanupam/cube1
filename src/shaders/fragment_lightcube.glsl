@@ -2,6 +2,15 @@
 
 out vec3 color;
 
+struct Light {
+	vec3 position;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+uniform Light light;
+
+
 void main() {
-	color = vec3(1.0, 1.0, 1.0);
+	color = light.ambient + light.diffuse + light.specular;
 }
