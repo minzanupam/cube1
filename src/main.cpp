@@ -57,7 +57,7 @@ int main() {
 	unsigned int u_MaterialAmbient, u_MaterialDiffuse, u_MaterialSpecular,
 		u_MaterialShininess;
 	unsigned int u_LightPosition, u_LightAmbient, u_LightDiffuse,
-		u_LightSpecular;
+		u_LightSpecular, u_LightDirection;
 
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit()) {
@@ -214,6 +214,7 @@ int main() {
 	u_MaterialSpecular = glGetUniformLocation(program, "material.specular");
 	u_MaterialShininess = glGetUniformLocation(program, "material.shininess");
 	u_LightPosition = glGetUniformLocation(program, "light.position");
+	u_LightDirection = glGetUniformLocation(program, "light.direction");
 	u_LightAmbient = glGetUniformLocation(program, "light.ambient");
 	u_LightDiffuse = glGetUniformLocation(program, "light.diffuse");
 	u_LightSpecular = glGetUniformLocation(program, "light.specular");
@@ -270,6 +271,8 @@ int main() {
 			glm::value_ptr(glm::vec3(copper[6], copper[7], copper[8])));
 		glUniform1f(u_MaterialShininess, 128.0f * copper[9]);
 		glUniform3fv(u_LightPosition, 1, glm::value_ptr(lightcube_pos));
+		glUniform3fv(u_LightDirection, 1,
+					 glm::value_ptr(glm::vec3(-1.0f, -1.0f, -1.0f)));
 		glUniform3fv(u_LightAmbient, 1,
 					 glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
 		glUniform3fv(u_LightDiffuse, 1,
