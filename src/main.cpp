@@ -164,9 +164,10 @@ int main() {
 	bool show_demo_window = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	vertexShader = load_shader("../src/shaders/vertex.glsl", GL_VERTEX_SHADER);
+	vertexShader =
+		load_shader("../src/shaders/vertex_phong.glsl", GL_VERTEX_SHADER);
 	fragmentShader =
-		load_shader("../src/shaders/fragment.glsl", GL_FRAGMENT_SHADER);
+		load_shader("../src/shaders/fragment_phong.glsl", GL_FRAGMENT_SHADER);
 
 	int status, len;
 	char log[SHADER_ERROR_LOG_LEN];
