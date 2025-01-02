@@ -166,8 +166,8 @@ int main() {
 
 	vertexShader =
 		load_shader("../src/shaders/vertex_phong.glsl", GL_VERTEX_SHADER);
-	fragmentShader =
-		load_shader("../src/shaders/fragment_phong.glsl", GL_FRAGMENT_SHADER);
+	fragmentShader = load_shader("../src/shaders/fragment_blinn_phong.glsl",
+								 GL_FRAGMENT_SHADER);
 
 	int status, len;
 	char log[SHADER_ERROR_LOG_LEN];
