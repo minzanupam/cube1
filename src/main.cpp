@@ -284,9 +284,9 @@ int main() {
 		glUniform1f(u_Material.shininess, 128.0f * copper[9]);
 		glUniform3fv(u_Light.position, 1, glm::value_ptr(lightcube_pos));
 		glUniform3fv(u_Light.ambient, 1,
-					 glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
+					 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 		glUniform3fv(u_Light.diffuse, 1,
-					 glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
+					 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 		glUniform3fv(u_Light.specular, 1,
 					 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 
