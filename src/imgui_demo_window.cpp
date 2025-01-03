@@ -6,9 +6,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-void imgui_demo_window(bool show_demo_window, glm::vec3 camera_eye,
-					   glm::vec3 camera_center, float camera_fov,
-					   glm::vec3 lightcube_pos) {
+void imgui_demo_window(bool show_demo_window, glm::vec3 &camera_eye,
+					   glm::vec3 &camera_center, float &camera_fov,
+					   glm::vec3 &lightcube_pos) {
 	ImGui::Begin("Camera", &show_demo_window);
 	ImGui::BeginGroup();
 	{
