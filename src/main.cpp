@@ -243,7 +243,7 @@ int main() {
 	glm::vec3 camera_eye = glm::vec3(0.0f, 0.0f, 8.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
 	float camera_fov = 45.0f;
-	glm::vec3 lightcube_pos = glm::vec3(5.0f, 5.0f, 3.5f);
+	glm::vec3 lightcube_pos = glm::vec3(2.0f, 2.0f, 3.5f);
 
 	float copper[10] = {// ambient 3, diffuse 3, specular 3, shininess 1
 						0.19125, 0.0735,   0.0225,	 0.7038,   0.27048,
