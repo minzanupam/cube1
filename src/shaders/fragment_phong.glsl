@@ -40,7 +40,7 @@ void main() {
 	vec3 diffuse = attenuation * light.diffuse * (diff * material.diffuse);
 	float spec = pow(max(dot(view_direction, reflection_direction), 0.0), material.shininess);
 	vec3 specular = attenuation * light.specular * spec * material.specular;
-	float gamma = 1.5;
+	float gamma = 1.3;
 
 	color = pow(ambient + diffuse + specular, vec3(1.0/gamma));
 }
