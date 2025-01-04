@@ -179,8 +179,8 @@ int main() {
 
 	vertexShader =
 		load_shader("../src/shaders/vertex_phong.glsl", GL_VERTEX_SHADER);
-	fragmentShader =
-		load_shader("../src/shaders/fragment_phong.glsl", GL_FRAGMENT_SHADER);
+	fragmentShader = load_shader("../src/shaders/fragment_blinn_phong.glsl",
+								 GL_FRAGMENT_SHADER);
 
 	int status, len;
 	char log[SHADER_ERROR_LOG_LEN];
@@ -284,11 +284,11 @@ int main() {
 		glUniform1f(u_Material.shininess, 128.0f * copper[9]);
 		glUniform3fv(u_Light.position, 1, glm::value_ptr(lightcube_pos));
 		glUniform3fv(u_Light.ambient, 1,
-					 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+					 glm::value_ptr(glm::vec3(0.6f, 0.6f, 0.6f)));
 		glUniform3fv(u_Light.diffuse, 1,
-					 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+					 glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.9f)));
 		glUniform3fv(u_Light.specular, 1,
-					 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+					 glm::value_ptr(glm::vec3(4.0f, 4.0f, 4.0f)));
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 							  NULL);

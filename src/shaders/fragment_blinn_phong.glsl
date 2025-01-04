@@ -24,18 +24,23 @@ struct Light {
 uniform Light light;
 
 void main() {
+	float Kc = 1.0;
+	float Kl = 0.09;
+	float Kq = 0.032;
+
 	vec3 light_direction = normalize(light.position - frag_pos);
 	vec3 normal_direction = normalize(frag_nor);
 	vec3 view_direction = normalize(camera_pos - frag_pos);
-
 	vec3 halfway = (light_direction + view_direction) / length(light_direction + view_direction);
+	float distance = length(light.position - frag_pos);
+	float attenuation = 1.0 / (Kc + (Kl*distance) + Kq * (distance * distance));
 
-	vec3 ambient = light.ambient * material.ambient;
+	vec3 ambient = attenuation * light.ambient * material.ambient;
 	float diff = max(dot(normal_direction, light_direction), 0.0);
-	vec3 diffuse = light.diffuse * (diff * material.diffuse);
+	vec3 diffuse = attenuation * light.diffuse * (diff * material.diffuse);
 	float spec = pow(max(dot(halfway, normal_direction), 0.0), material.shininess);
-	vec3 specular = light.specular * spec * material.specular;
-	float gamma = 1.5;
+	vec3 specular = attenuation * light.specular * spec * material.specular;
+	float gamma = 1.1;
 
 	color = pow(ambient + diffuse + specular, vec3(1.0/gamma));
 }
