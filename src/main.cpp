@@ -152,6 +152,56 @@ int main() {
 		6, 5, 1	 // Triangle 2
 	};
 
+	float vertices_cube2[] = {
+		// front face
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, // Vertex 0
+		0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,  // Vertex 1
+		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,	  // Vertex 2
+		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,	  // Vertex 2
+		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,  // Vertex 3
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, // Vertex 0
+
+		// back face
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, // Vertex 4
+		0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,	// Vertex 5
+		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,	// Vertex 6
+		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,	// Vertex 6
+		-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,	// Vertex 7
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, // Vertex 4
+
+		// top face
+		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,  // Vertex 3
+		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,	  // Vertex 2
+		0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // Vertex 6
+		0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // Vertex 6
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // Vertex 7
+		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,  // Vertex 3
+
+		// bottom face
+		-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,	// Vertex 0
+		0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,	// Vertex 1
+		0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,	// Vertex 5
+		0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,	// Vertex 5
+		-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, // Vertex 4
+		-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,	// Vertex 0
+
+		// left face
+		-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,	// Vertex 0
+		-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,	// Vertex 3
+		-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,	// Vertex 7
+		-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,	// Vertex 7
+		-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, // Vertex 4
+		-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,	// Vertex 0
+
+		// Right face
+		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,  // Vertex 1
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,	  // Vertex 2
+		0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  // Vertex 6
+		0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  // Vertex 6
+		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, // Vertex 5
+		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,  // Vertex 1
+	};
+
 	glGenVertexArrays(1, &VAO_lightcube);
 	glBindVertexArray(VAO_lightcube);
 	glGenBuffers(1, &VBO_lightcube);
@@ -167,11 +217,7 @@ int main() {
 	glBindVertexArray(VAO_ground);
 	glGenBuffers(1, &VBO_ground);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_cube), vertices_cube,
-				 GL_STATIC_DRAW);
-	glGenBuffers(1, &EBO_ground);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_ground);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_cube), indices_cube,
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_cube2), vertices_cube2,
 				 GL_STATIC_DRAW);
 
 	IMGUI_CHECKVERSION();
@@ -317,7 +363,6 @@ int main() {
 
 		glBindVertexArray(VAO_ground);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_ground);
 
 		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
@@ -342,13 +387,13 @@ int main() {
 		glUniform3fv(u_Light.specular, 1,
 					 glm::value_ptr(glm::vec3(4.0f, 4.0f, 4.0f)));
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 							  NULL);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 							  (void *)(3 * sizeof(float)));
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glUseProgram(program_lightcube);
 		glBindVertexArray(VAO_lightcube);
