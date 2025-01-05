@@ -315,6 +315,10 @@ int main() {
 		glEnableVertexAttribArray(1);
 		// glDrawArrays(GL_TRIANGLES, 0, 3 * asset_triangle_count);
 
+		glBindVertexArray(VAO_ground);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_ground);
+
 		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
@@ -338,12 +342,12 @@ int main() {
 		glUniform3fv(u_Light.specular, 1,
 					 glm::value_ptr(glm::vec3(4.0f, 4.0f, 4.0f)));
 
-		glBindVertexArray(VAO_ground);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_ground);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
 							  NULL);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+							  (void *)(3 * sizeof(float)));
 		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 		glUseProgram(program_lightcube);
