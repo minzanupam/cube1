@@ -66,6 +66,7 @@ unsigned int load_shader(const char *path, GLenum type) {
 int main() {
 	unsigned int VAO_asset, VBO_asset;
 	unsigned int VAO_lightcube, VBO_lightcube, EBO_lightcube;
+	unsigned int VAO_ground, VBO_ground, EBO_ground;
 	unsigned int vertexShader, fragmentShader, program;
 	unsigned int u_Model, u_View, u_Projection;
 	unsigned int u_cameraPos;
@@ -111,7 +112,7 @@ int main() {
 	}
 	glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float) * asset_triangle_count,
 				 asset_vertices, GL_STATIC_DRAW);
-	float vertices_lightcube[] = {
+	float vertices_cube[] = {
 		// Front face
 		-0.5f, -0.5f, 0.5f, // Vertex 0
 		0.5f, -0.5f, 0.5f,	// Vertex 1
@@ -125,7 +126,7 @@ int main() {
 		-0.5f, 0.5f, -0.5f,	 // Vertex 7
 	};
 
-	unsigned int indices_lightcube[] = {
+	unsigned int indices_cube[] = {
 		// Front face
 		0, 1, 2, // Triangle 1
 		2, 3, 0, // Triangle 2
@@ -155,12 +156,23 @@ int main() {
 	glBindVertexArray(VAO_lightcube);
 	glGenBuffers(1, &VBO_lightcube);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_lightcube);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_lightcube),
-				 vertices_lightcube, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_cube), vertices_cube,
+				 GL_STATIC_DRAW);
 	glGenBuffers(1, &EBO_lightcube);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_lightcube);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_lightcube),
-				 indices_lightcube, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_cube), indices_cube,
+				 GL_STATIC_DRAW);
+
+	glGenVertexArrays(1, &VAO_ground);
+	glBindVertexArray(VAO_ground);
+	glGenBuffers(1, &VBO_ground);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_cube), vertices_cube,
+				 GL_STATIC_DRAW);
+	glGenBuffers(1, &EBO_ground);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_ground);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_cube), indices_cube,
+				 GL_STATIC_DRAW);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -249,6 +261,10 @@ int main() {
 						0.19125, 0.0735,   0.0225,	 0.7038,   0.27048,
 						0.0828,	 0.256777, 0.137622, 0.086014, 0.1};
 
+	float white_plastic[] = {// ambient 3, diffuse 3, specular 3, shininess 1
+							 0.0,  0.0,	 0.0,  0.55, 0.55,
+							 0.55, 0.70, 0.70, 0.70, 0.25};
+
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -267,6 +283,7 @@ int main() {
 		glUseProgram(program);
 		glBindVertexArray(VAO_asset);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_asset);
+
 		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
@@ -296,7 +313,38 @@ int main() {
 							  (void *)(3 * sizeof(float)));
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
-		glDrawArrays(GL_TRIANGLES, 0, 3 * asset_triangle_count);
+		// glDrawArrays(GL_TRIANGLES, 0, 3 * asset_triangle_count);
+
+		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
+						   glm::value_ptr(projection));
+		glUniform3fv(u_cameraPos, 1, glm::value_ptr(camera_eye));
+		glUniform3fv(
+			u_Material.ambient, 1,
+			glm::value_ptr(glm::vec3(copper[0], copper[1], copper[2])));
+		glUniform3fv(
+			u_Material.diffuse, 1,
+			glm::value_ptr(glm::vec3(copper[3], copper[4], copper[5])));
+		glUniform3fv(
+			u_Material.specular, 1,
+			glm::value_ptr(glm::vec3(copper[6], copper[7], copper[8])));
+		glUniform1f(u_Material.shininess, 128.0f * copper[9]);
+		glUniform3fv(u_Light.position, 1, glm::value_ptr(lightcube_pos));
+		glUniform3fv(u_Light.ambient, 1,
+					 glm::value_ptr(glm::vec3(0.6f, 0.6f, 0.6f)));
+		glUniform3fv(u_Light.diffuse, 1,
+					 glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.9f)));
+		glUniform3fv(u_Light.specular, 1,
+					 glm::value_ptr(glm::vec3(4.0f, 4.0f, 4.0f)));
+
+		glBindVertexArray(VAO_ground);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_ground);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+							  NULL);
+		glEnableVertexAttribArray(0);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 		glUseProgram(program_lightcube);
 		glBindVertexArray(VAO_lightcube);
