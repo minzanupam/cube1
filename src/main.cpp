@@ -364,6 +364,8 @@ int main() {
 		glBindVertexArray(VAO_ground);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
 
+		model = glm::scale(glm::mat4(1.0f), glm::vec3(10.0f, 0.1f, 10.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.1f, 0.0f));
 		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
