@@ -298,7 +298,7 @@ int main() {
 	unsigned int u_LightSpecular_lightcube =
 		glGetUniformLocation(program_lightcube, "light.specular");
 
-	glm::vec3 camera_eye = glm::vec3(0.0f, 0.0f, 8.0f);
+	glm::vec3 camera_eye = glm::vec3(0.0f, 4.0f, 8.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
 	float camera_fov = 45.0f;
 	glm::vec3 lightcube_pos = glm::vec3(2.0f, 2.0f, 3.5f);
