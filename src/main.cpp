@@ -373,14 +373,17 @@ int main() {
 		glUniform3fv(u_cameraPos, 1, glm::value_ptr(camera_eye));
 		glUniform3fv(
 			u_Material.ambient, 1,
-			glm::value_ptr(glm::vec3(copper[0], copper[1], copper[2])));
+			glm::value_ptr(glm::vec3(white_plastic[0], white_plastic[1],
+									 white_plastic[2])));
 		glUniform3fv(
 			u_Material.diffuse, 1,
-			glm::value_ptr(glm::vec3(copper[3], copper[4], copper[5])));
+			glm::value_ptr(glm::vec3(white_plastic[3], white_plastic[4],
+									 white_plastic[5])));
 		glUniform3fv(
 			u_Material.specular, 1,
-			glm::value_ptr(glm::vec3(copper[6], copper[7], copper[8])));
-		glUniform1f(u_Material.shininess, 128.0f * copper[9]);
+			glm::value_ptr(glm::vec3(white_plastic[6], white_plastic[7],
+									 white_plastic[8])));
+		glUniform1f(u_Material.shininess, 128.0f * white_plastic[9]);
 		glUniform3fv(u_Light.position, 1, glm::value_ptr(lightcube_pos));
 		glUniform3fv(u_Light.ambient, 1,
 					 glm::value_ptr(glm::vec3(0.6f, 0.6f, 0.6f)));
