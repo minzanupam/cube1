@@ -71,6 +71,7 @@ int main() {
 	unsigned int u_Model, u_View, u_Projection;
 	unsigned int u_cameraPos;
 	unsigned int FBO;
+	unsigned int RBO;
 	unsigned int texture;
 
 	struct UMaterial u_Material;
@@ -322,15 +323,20 @@ int main() {
 				 GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
 						   texture, 0);
-
+	glGenRenderbuffers(1, &RBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WIDTH, HEIGHT);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+							  GL_RENDERBUFFER, RBO);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cerr << "**FRAMEBUFFER Error: Framebuffer not complete"
-				  << std::endl;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		std::cerr << "** GL Error **" << std::endl
+				  << "** Framebuffer: framebuffer not complete" << std::endl;
 	}
-	glDeleteFramebuffers(1, &FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
