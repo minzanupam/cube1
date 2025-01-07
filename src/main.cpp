@@ -70,6 +70,9 @@ int main() {
 	unsigned int vertexShader, fragmentShader, program;
 	unsigned int u_Model, u_View, u_Projection;
 	unsigned int u_cameraPos;
+	unsigned int FBO;
+	unsigned int texture;
+
 	struct UMaterial u_Material;
 	struct ULight u_Light;
 
@@ -310,6 +313,24 @@ int main() {
 	float white_plastic[] = {// ambient 3, diffuse 3, specular 3, shininess 1
 							 0.0,  0.0,	 0.0,  0.55, 0.55,
 							 0.55, 0.70, 0.70, 0.70, 0.25};
+
+	glGenFramebuffers(1, &FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB,
+				 GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+						   texture, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "**FRAMEBUFFER Error: Framebuffer not complete"
+				  << std::endl;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+	glDeleteFramebuffers(1, &FBO);
 
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
