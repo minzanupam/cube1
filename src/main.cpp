@@ -43,25 +43,71 @@ static void glfw_error_callback(int error, const char *description) {
 	fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-unsigned int load_shader(const char *path, GLenum type) {
-	unsigned int shader;
-	int status, len;
-	char log[SHADER_ERROR_LOG_LEN];
-	std::ifstream fs_shader(path);
-	std::stringstream ss_shader;
-	ss_shader << fs_shader.rdbuf();
-	std::string s_shader = ss_shader.str();
-	const char *c_shader = s_shader.c_str();
-	shader = glCreateShader(type);
-	glShaderSource(shader, 1, &c_shader, NULL);
-	glCompileShader(shader);
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-	if (status == GL_FALSE) {
-		glGetShaderInfoLog(shader, SHADER_ERROR_LOG_LEN, &len, log);
-		std::cout << log << std::endl;
+class BasicShader {
+  private:
+	std::string read_file(const char *path) {
+		unsigned int shader;
+		int status, len;
+		char log[SHADER_ERROR_LOG_LEN];
+		std::ifstream fs(path);
+		std::stringstream ss;
+		ss << fs.rdbuf();
+		std::string str = ss.str();
+		return str;
 	}
-	return shader;
-}
+
+  public:
+	unsigned int ID; // program ID
+
+	BasicShader(const char *vertexShaderPath, const char *fragmentShaderPath) {
+		unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+		unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		std::string vertexShaderString = read_file(vertexShaderPath);
+		std::string fragmentShaderString = read_file(fragmentShaderPath);
+		const char *vertexShaderCode = vertexShaderString.c_str();
+		const char *fragmentShaderCode = fragmentShaderString.c_str();
+		glShaderSource(vertexShader, 1, &vertexShaderCode, NULL);
+		glShaderSource(fragmentShader, 1, &fragmentShaderCode, NULL);
+
+		this->ID = glCreateProgram();
+
+		int status, len;
+		char log[SHADER_ERROR_LOG_LEN];
+		glCompileShader(vertexShader);
+		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
+		if (status == GL_FALSE) {
+			glGetShaderInfoLog(vertexShader, SHADER_ERROR_LOG_LEN, &len, log);
+			std::cout << log << std::endl;
+			std::cout << "**GL Shader Error : vertex shader : "
+					  << vertexShaderPath << " **" << std::endl
+					  << vertexShaderCode << std::endl;
+		} else {
+			glAttachShader(this->ID, vertexShader);
+		}
+		glCompileShader(fragmentShader);
+		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
+		if (status == GL_FALSE) {
+			glGetShaderInfoLog(fragmentShader, SHADER_ERROR_LOG_LEN, &len, log);
+			std::cout << log << std::endl;
+			std::cout << "**GL Shader Error : fragment shader : "
+					  << fragmentShaderPath << " **" << std::endl
+					  << fragmentShaderCode << std::endl;
+		} else {
+			glAttachShader(this->ID, fragmentShader);
+		}
+		glLinkProgram(this->ID);
+		glGetProgramiv(this->ID, GL_LINK_STATUS, &status);
+		if (status == GL_FALSE) {
+			glGetProgramInfoLog(this->ID, SHADER_ERROR_LOG_LEN, &len, log);
+			std::cout << log << std::endl;
+			exit(1);
+		}
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragmentShader);
+	}
+
+	void use() { glUseProgram(this->ID); }
+};
 
 int main() {
 	unsigned int VAO_asset, VBO_asset;
@@ -239,68 +285,42 @@ int main() {
 	bool show_demo_window = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	vertexShader =
-		load_shader("../src/shaders/vertex_phong.glsl", GL_VERTEX_SHADER);
-	fragmentShader = load_shader("../src/shaders/fragment_blinn_phong.glsl",
-								 GL_FRAGMENT_SHADER);
-
-	int status, len;
-	char log[SHADER_ERROR_LOG_LEN];
-
-	program = glCreateProgram();
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
-	glLinkProgram(program);
-	glGetProgramiv(program, GL_LINK_STATUS, &status);
-	if (status == GL_FALSE) {
-		glGetProgramInfoLog(program, SHADER_ERROR_LOG_LEN, &len, log);
-		std::cout << log << std::endl;
-	}
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	unsigned int vertexShader_lightcube =
-		load_shader("../src/shaders/vertex_lightcube.glsl", GL_VERTEX_SHADER);
-	unsigned int fragmentShader_lightcube = load_shader(
-		"../src/shaders/fragment_lightcube.glsl", GL_FRAGMENT_SHADER);
-
-	unsigned int program_lightcube = glCreateProgram();
-	glAttachShader(program_lightcube, vertexShader_lightcube);
-	glAttachShader(program_lightcube, fragmentShader_lightcube);
-	glLinkProgram(program_lightcube);
-	glGetProgramiv(program_lightcube, GL_LINK_STATUS, &status);
-	if (status == GL_FALSE) {
-		glGetProgramInfoLog(program, SHADER_ERROR_LOG_LEN, &len, log);
-		std::cout << log << std::endl;
-	}
-	glDeleteShader(vertexShader_lightcube);
-	glDeleteShader(fragmentShader_lightcube);
+	BasicShader *shader_phong =
+		new BasicShader("../src/shaders/vertex_phong.glsl",
+						"../src/shaders/fragment_blinn_phong.glsl");
 
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::mat4(1.0f);
+	u_Model = glGetUniformLocation(shader_phong->ID, "model");
+	u_View = glGetUniformLocation(shader_phong->ID, "view");
+	u_Projection = glGetUniformLocation(shader_phong->ID, "projection");
+	u_cameraPos = glGetUniformLocation(shader_phong->ID, "camera_pos");
+	u_Material.ambient =
+		glGetUniformLocation(shader_phong->ID, "material.ambient");
+	u_Material.diffuse =
+		glGetUniformLocation(shader_phong->ID, "material.diffuse");
+	u_Material.specular =
+		glGetUniformLocation(shader_phong->ID, "material.specular");
+	u_Material.shininess =
+		glGetUniformLocation(shader_phong->ID, "material.shininess");
+	u_Light.position = glGetUniformLocation(shader_phong->ID, "light.position");
+	u_Light.ambient = glGetUniformLocation(shader_phong->ID, "light.ambient");
+	u_Light.diffuse = glGetUniformLocation(shader_phong->ID, "light.diffuse");
+	u_Light.specular = glGetUniformLocation(shader_phong->ID, "light.specular");
 
-	u_Model = glGetUniformLocation(program, "model");
-	u_View = glGetUniformLocation(program, "view");
-	u_Projection = glGetUniformLocation(program, "projection");
-	u_cameraPos = glGetUniformLocation(program, "camera_pos");
-	u_Material.ambient = glGetUniformLocation(program, "material.ambient");
-	u_Material.diffuse = glGetUniformLocation(program, "material.diffuse");
-	u_Material.specular = glGetUniformLocation(program, "material.specular");
-	u_Material.shininess = glGetUniformLocation(program, "material.shininess");
-	u_Light.position = glGetUniformLocation(program, "light.position");
-	u_Light.ambient = glGetUniformLocation(program, "light.ambient");
-	u_Light.diffuse = glGetUniformLocation(program, "light.diffuse");
-	u_Light.specular = glGetUniformLocation(program, "light.specular");
+	BasicShader *shader_lightcube =
+		new BasicShader("../src/shaders/vertex_lightcube.glsl",
+						"../src/shaders/fragment_lightcube.glsl");
 
 	unsigned int u_LightPosition_lightcube =
-		glGetUniformLocation(program_lightcube, "light.position");
+		glGetUniformLocation(shader_lightcube->ID, "light.position");
 	unsigned int u_LightAmbient_lightcube =
-		glGetUniformLocation(program_lightcube, "light.ambient");
+		glGetUniformLocation(shader_lightcube->ID, "light.ambient");
 	unsigned int u_LightDiffuse_lightcube =
-		glGetUniformLocation(program_lightcube, "light.diffuse");
+		glGetUniformLocation(shader_lightcube->ID, "light.diffuse");
 	unsigned int u_LightSpecular_lightcube =
-		glGetUniformLocation(program_lightcube, "light.specular");
+		glGetUniformLocation(shader_lightcube->ID, "light.specular");
 
 	glm::vec3 camera_eye = glm::vec3(0.0f, 4.0f, 8.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -368,21 +388,8 @@ int main() {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 
-	unsigned int vertexShader_quad =
-		load_shader("../src/shaders/vertex_quad.glsl", GL_VERTEX_SHADER);
-	unsigned int fragmentShader_quad =
-		load_shader("../src/shaders/fragment_quad.glsl", GL_FRAGMENT_SHADER);
-	unsigned int program_quad = glCreateProgram();
-	glAttachShader(program_quad, vertexShader_quad);
-	glAttachShader(program_quad, fragmentShader_quad);
-	glLinkProgram(program_quad);
-	glGetProgramiv(program_quad, GL_LINK_STATUS, &status);
-	if (status == GL_FALSE) {
-		glGetProgramInfoLog(program_quad, SHADER_ERROR_LOG_LEN, &len, log);
-		std::cout << log << std::endl;
-	}
-	glDeleteShader(vertexShader_quad);
-	glDeleteShader(fragmentShader_quad);
+	BasicShader *shader_quad = new BasicShader(
+		"../src/shaders/vertex_quad.glsl", "../src/shaders/fragment_quad.glsl");
 
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
@@ -404,7 +411,7 @@ int main() {
 			glm::perspective(glm::radians(camera_fov),
 							 (float)WIDTH / (float)HEIGHT, 0.01f, 100.0f);
 
-		glUseProgram(program);
+		shader_phong->use();
 		glBindVertexArray(VAO_asset);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_asset);
 
@@ -480,7 +487,7 @@ int main() {
 		glEnableVertexAttribArray(1);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		glUseProgram(program_lightcube);
+		shader_lightcube->use();
 		glBindVertexArray(VAO_lightcube);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_lightcube);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_lightcube);
@@ -512,7 +519,7 @@ int main() {
 		glBindVertexArray(VAO_quad);
 		glDisable(GL_DEPTH_TEST);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_quad);
-		glUseProgram(program_quad);
+		shader_quad->use();
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
