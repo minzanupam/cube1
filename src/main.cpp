@@ -342,13 +342,24 @@ int main() {
 	glGenBuffers(1, &VBO_quad);
 	glBindVertexArray(VAO_quad);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_quad);
+	// float quad_data[] = {
+	// 	-1.0f, -1.0f, -1.0f, -1.0f, ///
+	// 	-1.0f, 1.0f,  -1.0f, 1.0f,	///
+	// 	1.0f,  -1.0f, 1.0f,	 -1.0f, ///
+	// 	1.0f,  -1.0f, 1.0f,	 -1.0f, ///
+	// 	1.0f,  1.0f,  1.0f,	 1.0f,	///
+	// 	-1.0f, 1.0f,  -1.0f, 1.0f,	///
+	// };
 	float quad_data[] = {
-		-1.0f, -1.0f, -1.0f, -1.0f, ///
-		-1.0f, 1.0f,  -1.0f, 1.0f,	///
-		1.0f,  -1.0f, 1.0f,	 -1.0f, ///
-		1.0f,  -1.0f, 1.0f,	 -1.0f, ///
-		1.0f,  1.0f,  1.0f,	 1.0f,	///
-		-1.0f, 1.0f,  -1.0f, 1.0f,	///
+		// vertex attributes for a quad that fills the entire screen in
+		// Normalized Device Coordinates.
+		// positions  // texCoords
+		-1.0f, 1.0f,  0.0f, 1.0f, ///
+		-1.0f, -1.0f, 0.0f, 0.0f, ///
+		1.0f,  -1.0f, 1.0f, 0.0f, ///
+		-1.0f, 1.0f,  0.0f, 1.0f, ///
+		1.0f,  -1.0f, 1.0f, 0.0f, ///
+		1.0f,  1.0f,  1.0f, 1.0f  ///
 	};
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quad_data), quad_data, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
