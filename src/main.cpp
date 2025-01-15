@@ -337,14 +337,55 @@ int main() {
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	unsigned int VAO_quad, VBO_quad;
+	glGenVertexArrays(1, &VAO_quad);
+	glGenBuffers(1, &VBO_quad);
+	glBindVertexArray(VAO_quad);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_quad);
+	float quad_data[] = {
+		-1.0f, -1.0f, -1.0f, -1.0f, ///
+		-1.0f, 1.0f,  -1.0f, 1.0f,	///
+		1.0f,  -1.0f, 1.0f,	 -1.0f, ///
+		1.0f,  -1.0f, 1.0f,	 -1.0f, ///
+		1.0f,  1.0f,  1.0f,	 1.0f,	///
+		-1.0f, 1.0f,  -1.0f, 1.0f,	///
+	};
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quad_data), quad_data, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+						  (void *)(sizeof(float) * 2));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	unsigned int vertexShader_quad =
+		load_shader("../src/shaders/vertex_quad.glsl", GL_VERTEX_SHADER);
+	unsigned int fragmentShader_quad =
+		load_shader("../src/shaders/fragment_quad.glsl", GL_FRAGMENT_SHADER);
+	unsigned int program_quad = glCreateProgram();
+	glAttachShader(program_quad, vertexShader_quad);
+	glAttachShader(program_quad, fragmentShader_quad);
+	glLinkProgram(program_quad);
+	glGetProgramiv(program_quad, GL_LINK_STATUS, &status);
+	if (status == GL_FALSE) {
+		glGetProgramInfoLog(program_quad, SHADER_ERROR_LOG_LEN, &len, log);
+		std::cout << log << std::endl;
+	}
+	glDeleteShader(vertexShader_quad);
+	glDeleteShader(fragmentShader_quad);
+
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
 		glfwPollEvents();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.04313725, 0.1803921, 0.1607843, 1.0);
+		glEnable(GL_DEPTH_TEST);
+
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
 		view =
 			glm::lookAt(camera_eye, camera_center, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -452,6 +493,17 @@ int main() {
 							  NULL);
 		glEnableVertexAttribArray(0);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(0.1, 0.1, 0.1, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glBindVertexArray(VAO_quad);
+		glDisable(GL_DEPTH_TEST);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_quad);
+		glUseProgram(program_quad);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		// ImGui::ShowDemoWindow(&show_demo_window);
 		if (show_demo_window) {
