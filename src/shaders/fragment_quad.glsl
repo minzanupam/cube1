@@ -37,5 +37,5 @@ vec4 blur(sampler2D screenTexture, vec2 TexCoord) {
 }
 
 void main() {
-	FragColor = blur(screenTexture, TexCoord);
+	FragColor = texture(screenTexture, TexCoord);
 }
