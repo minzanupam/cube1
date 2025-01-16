@@ -50,9 +50,6 @@ int main() {
 	unsigned int vertexShader, fragmentShader, program;
 	unsigned int u_Model, u_View, u_Projection;
 	unsigned int u_cameraPos;
-	unsigned int FBO_quad;
-	unsigned int RBO_quad;
-	unsigned int texture;
 
 	struct UMaterial u_Material;
 	struct ULight u_Light;
@@ -269,59 +266,6 @@ int main() {
 							 0.0,  0.0,	 0.0,  0.55, 0.55,
 							 0.55, 0.70, 0.70, 0.70, 0.25};
 
-	glGenFramebuffers(1, &FBO_quad);
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO_quad);
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB,
-				 GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-						   texture, 0);
-	glGenRenderbuffers(1, &RBO_quad);
-	glBindRenderbuffer(GL_RENDERBUFFER, RBO_quad);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WIDTH, HEIGHT);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
-							  GL_RENDERBUFFER, RBO_quad);
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cerr << "** GL Error **" << std::endl
-				  << "** Framebuffer: framebuffer not complete" << std::endl;
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	unsigned int VAO_quad, VBO_quad;
-	glGenVertexArrays(1, &VAO_quad);
-	glGenBuffers(1, &VBO_quad);
-	glBindVertexArray(VAO_quad);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_quad);
-	// float quad_data[] = {
-	// 	-1.0f, -1.0f, -1.0f, -1.0f, ///
-	// 	-1.0f, 1.0f,  -1.0f, 1.0f,	///
-	// 	1.0f,  -1.0f, 1.0f,	 -1.0f, ///
-	// 	1.0f,  -1.0f, 1.0f,	 -1.0f, ///
-	// 	1.0f,  1.0f,  1.0f,	 1.0f,	///
-	// 	-1.0f, 1.0f,  -1.0f, 1.0f,	///
-	// };
-	float quad_data[] = {
-		// vertex attributes for a quad that fills the entire screen in
-		// Normalized Device Coordinates.
-		// positions  // texCoords
-		-1.0f, 1.0f,  0.0f, 1.0f, ///
-		-1.0f, -1.0f, 0.0f, 0.0f, ///
-		1.0f,  -1.0f, 1.0f, 0.0f, ///
-		-1.0f, 1.0f,  0.0f, 1.0f, ///
-		1.0f,  -1.0f, 1.0f, 0.0f, ///
-		1.0f,  1.0f,  1.0f, 1.0f  ///
-	};
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quad_data), quad_data, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-						  (void *)(sizeof(float) * 2));
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-
 	BasicShader *shader_quad = new BasicShader(
 		"../src/shaders/vertex_quad.glsl", "../src/shaders/fragment_quad.glsl");
 
@@ -332,11 +276,8 @@ int main() {
 
 		glfwPollEvents();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, FBO_quad);
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.04313725, 0.1803921, 0.1607843, 1.0);
-		glEnable(GL_DEPTH_TEST);
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
 		view =
@@ -445,17 +386,6 @@ int main() {
 							  NULL);
 		glEnableVertexAttribArray(0);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor(0.1, 0.1, 0.1, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		glBindVertexArray(VAO_quad);
-		glDisable(GL_DEPTH_TEST);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_quad);
-		shader_quad->use();
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		// ImGui::ShowDemoWindow(&show_demo_window);
 		if (show_demo_window) {
