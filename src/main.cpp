@@ -389,31 +389,6 @@ int main() {
 		glEnableVertexAttribArray(1);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		shader_lightcube->use();
-		glBindVertexArray(VAO_lightcube);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_lightcube);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_lightcube);
-		model = glm::translate(glm::mat4(1.0f), lightcube_pos);
-		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
-						   glm::value_ptr(projection));
-		// Value for these are essentially copies of the values used
-		// in the light asset.
-		glUniform3fv(u_LightPosition_lightcube, 1,
-					 glm::value_ptr(lightcube_pos));
-		glUniform3fv(u_LightAmbient_lightcube, 1,
-					 glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
-		glUniform3fv(u_LightDiffuse_lightcube, 1,
-					 glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
-		glUniform3fv(u_LightSpecular_lightcube, 1,
-					 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-							  NULL);
-		glEnableVertexAttribArray(0);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
 		/**
 		 * 2nd pass
 		 * */
