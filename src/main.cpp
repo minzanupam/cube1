@@ -266,9 +266,6 @@ int main() {
 							 0.0,  0.0,	 0.0,  0.55, 0.55,
 							 0.55, 0.70, 0.70, 0.70, 0.25};
 
-	BasicShader *shader_quad = new BasicShader(
-		"../src/shaders/vertex_quad.glsl", "../src/shaders/fragment_quad.glsl");
-
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
