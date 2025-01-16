@@ -435,6 +435,9 @@ int main() {
 		glBindVertexArray(VAO_asset);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_asset);
 
+		// Fix later: This might be incorrect
+		glBindTexture(GL_TEXTURE_2D, texture_depthmap);
+
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.1f, 0.0f));
 		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
