@@ -50,8 +50,8 @@ int main() {
 	unsigned int vertexShader, fragmentShader, program;
 	unsigned int u_Model, u_View, u_Projection;
 	unsigned int u_cameraPos;
-	unsigned int FBO;
-	unsigned int RBO;
+	unsigned int FBO_quad;
+	unsigned int RBO_quad;
 	unsigned int texture;
 
 	struct UMaterial u_Material;
@@ -269,8 +269,8 @@ int main() {
 							 0.0,  0.0,	 0.0,  0.55, 0.55,
 							 0.55, 0.70, 0.70, 0.70, 0.25};
 
-	glGenFramebuffers(1, &FBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	glGenFramebuffers(1, &FBO_quad);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO_quad);
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB,
@@ -279,12 +279,12 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
 						   texture, 0);
-	glGenRenderbuffers(1, &RBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+	glGenRenderbuffers(1, &RBO_quad);
+	glBindRenderbuffer(GL_RENDERBUFFER, RBO_quad);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WIDTH, HEIGHT);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
-							  GL_RENDERBUFFER, RBO);
+							  GL_RENDERBUFFER, RBO_quad);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 		std::cerr << "** GL Error **" << std::endl
 				  << "** Framebuffer: framebuffer not complete" << std::endl;
@@ -332,7 +332,7 @@ int main() {
 
 		glfwPollEvents();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO_quad);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.04313725, 0.1803921, 0.1607843, 1.0);
