@@ -290,6 +290,18 @@ int main() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	BasicShader *shader_depthmap =
+		new BasicShader("../src/shaders/vertex_simple_depth.glsl",
+						"../src/shaders/fragment_empty.glsl");
+
+	glm::mat4 model_dethmap = glm::mat4(1.0f);
+	glm::mat4 lightSpaceMatrix_depthmap = glm::mat4(1.0f);
+
+	unsigned int u_Model_depthmap =
+		glGetUniformLocation(shader_depthmap->ID, "model");
+	unsigned int u_LightSpaceMatrix_depthmap =
+		glGetUniformLocation(shader_depthmap->ID, "lightSpaceMatrix");
+
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -306,88 +318,11 @@ int main() {
 
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
-		view =
-			glm::lookAt(camera_eye, camera_center, glm::vec3(0.0f, 1.0f, 0.0f));
-		projection =
-			glm::perspective(glm::radians(camera_fov),
-							 (float)WIDTH / (float)HEIGHT, 0.01f, 100.0f);
-
-		shader_phong->use();
-		glBindVertexArray(VAO_asset);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_asset);
-
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.1f, 0.0f));
-		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
-						   glm::value_ptr(projection));
-		glUniform3fv(u_cameraPos, 1, glm::value_ptr(camera_eye));
-		glUniform3fv(
-			u_Material.ambient, 1,
-			glm::value_ptr(glm::vec3(copper[0], copper[1], copper[2])));
-		glUniform3fv(
-			u_Material.diffuse, 1,
-			glm::value_ptr(glm::vec3(copper[3], copper[4], copper[5])));
-		glUniform3fv(
-			u_Material.specular, 1,
-			glm::value_ptr(glm::vec3(copper[6], copper[7], copper[8])));
-		glUniform1f(u_Material.shininess, 128.0f * copper[9]);
-		glUniform3fv(u_Light.position, 1, glm::value_ptr(lightcube_pos));
-		glUniform3fv(u_Light.ambient, 1,
-					 glm::value_ptr(glm::vec3(0.6f, 0.6f, 0.6f)));
-		glUniform3fv(u_Light.diffuse, 1,
-					 glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.9f)));
-		glUniform3fv(u_Light.specular, 1,
-					 glm::value_ptr(glm::vec3(4.0f, 4.0f, 4.0f)));
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-							  NULL);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-							  (void *)(3 * sizeof(float)));
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glDrawArrays(GL_TRIANGLES, 0, 3 * asset_triangle_count);
-
-		glBindVertexArray(VAO_ground);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
-
-		model = glm::scale(glm::mat4(1.0f), glm::vec3(10.0f, 0.1f, 10.0f));
-		model = glm::translate(model, glm::vec3(0.0f, -0.05f, 0.0f));
-		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
-						   glm::value_ptr(projection));
-		glUniform3fv(u_cameraPos, 1, glm::value_ptr(camera_eye));
-		glUniform3fv(
-			u_Material.ambient, 1,
-			glm::value_ptr(glm::vec3(white_plastic[0], white_plastic[1],
-									 white_plastic[2])));
-		glUniform3fv(
-			u_Material.diffuse, 1,
-			glm::value_ptr(glm::vec3(white_plastic[3], white_plastic[4],
-									 white_plastic[5])));
-		glUniform3fv(
-			u_Material.specular, 1,
-			glm::value_ptr(glm::vec3(white_plastic[6], white_plastic[7],
-									 white_plastic[8])));
-		glUniform1f(u_Material.shininess, 128.0f * white_plastic[9]);
-		glUniform3fv(u_Light.position, 1, glm::value_ptr(lightcube_pos));
-		glUniform3fv(u_Light.ambient, 1,
-					 glm::value_ptr(glm::vec3(0.6f, 0.6f, 0.6f)));
-		glUniform3fv(u_Light.diffuse, 1,
-					 glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.9f)));
-		glUniform3fv(u_Light.specular, 1,
-					 glm::value_ptr(glm::vec3(4.0f, 4.0f, 4.0f)));
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-							  NULL);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-							  (void *)(3 * sizeof(float)));
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		shader_depthmap->use();
+		glUniformMatrix4fv(u_Model_depthmap, 1, GL_FALSE,
+						   glm::value_ptr(model));
+		glUniformMatrix4fv(u_LightSpaceMatrix_depthmap, 1, GL_FALSE,
+						   glm::value_ptr(lightSpaceMatrix_depthmap));
 
 		/**
 		 * 2nd pass
@@ -410,9 +345,6 @@ int main() {
 		glBindVertexArray(VAO_asset);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_asset);
 
-		// Fix later: This might be incorrect
-		glBindTexture(GL_TEXTURE_2D, texture_depthmap);
-
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.1f, 0.0f));
 		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
@@ -444,6 +376,9 @@ int main() {
 							  (void *)(3 * sizeof(float)));
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
+
+		glBindTexture(GL_TEXTURE_2D, texture_depthmap);
+
 		glDrawArrays(GL_TRIANGLES, 0, 3 * asset_triangle_count);
 
 		glBindVertexArray(VAO_ground);
