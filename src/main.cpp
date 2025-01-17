@@ -218,9 +218,9 @@ int main() {
 	bool show_demo_window = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	BasicShader *shader_phong =
-		new BasicShader("../src/shaders/vertex_phong.glsl",
-						"../src/shaders/fragment_blinn_phong.glsl");
+	BasicShader *shader_phong = new BasicShader(
+		"../src/shaders/vertex_phong.glsl",
+		"../src/shaders/fragment_blinn_phong_directional_light.glsl");
 
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
