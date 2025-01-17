@@ -51,7 +51,7 @@ BasicShader::BasicShader(const char *vertexShaderPath,
 	if (status == GL_FALSE) {
 		glGetShaderInfoLog(fragmentShader, SHADER_ERROR_LOG_LEN, &len, log);
 		std::cout << log << std::endl;
-		std::cout << "**GL Shader Error : fragment shader : "
+		std::cout << "** GL Shader Error : fragment shader : "
 				  << fragmentShaderPath << " **" << std::endl
 				  << fragmentShaderCode << std::endl;
 	} else {
@@ -61,6 +61,7 @@ BasicShader::BasicShader(const char *vertexShaderPath,
 	glGetProgramiv(this->ID, GL_LINK_STATUS, &status);
 	if (status == GL_FALSE) {
 		glGetProgramInfoLog(this->ID, SHADER_ERROR_LOG_LEN, &len, log);
+		std::cout << "** GL Program Error **" << std::endl;
 		std::cout << log << std::endl;
 		exit(1);
 	}
