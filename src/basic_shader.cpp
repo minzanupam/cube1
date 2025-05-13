@@ -21,7 +21,7 @@ std::string BasicShader::read_file(const char *path) {
 }
 
 BasicShader::BasicShader(const char *vertexShaderPath,
-						 const char *fragmentShaderPath) {
+			 const char *fragmentShaderPath) {
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	std::string vertexShaderString = read_file(vertexShaderPath);
@@ -38,22 +38,24 @@ BasicShader::BasicShader(const char *vertexShaderPath,
 	glCompileShader(vertexShader);
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
 	if (status == GL_FALSE) {
-		glGetShaderInfoLog(vertexShader, SHADER_ERROR_LOG_LEN, &len, log);
+		glGetShaderInfoLog(vertexShader, SHADER_ERROR_LOG_LEN, &len,
+				   log);
 		std::cout << log << std::endl;
-		std::cout << "**GL Shader Error : vertex shader : " << vertexShaderPath
-				  << " **" << std::endl
-				  << vertexShaderCode << std::endl;
+		std::cout << "**GL Shader Error : vertex shader : "
+			  << vertexShaderPath << " **" << std::endl
+			  << vertexShaderCode << std::endl;
 	} else {
 		glAttachShader(this->ID, vertexShader);
 	}
 	glCompileShader(fragmentShader);
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
 	if (status == GL_FALSE) {
-		glGetShaderInfoLog(fragmentShader, SHADER_ERROR_LOG_LEN, &len, log);
+		glGetShaderInfoLog(fragmentShader, SHADER_ERROR_LOG_LEN, &len,
+				   log);
 		std::cout << log << std::endl;
 		std::cout << "** GL Shader Error : fragment shader : "
-				  << fragmentShaderPath << " **" << std::endl
-				  << fragmentShaderCode << std::endl;
+			  << fragmentShaderPath << " **" << std::endl
+			  << fragmentShaderCode << std::endl;
 	} else {
 		glAttachShader(this->ID, fragmentShader);
 	}
