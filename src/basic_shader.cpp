@@ -70,4 +70,14 @@ BasicShader::BasicShader(const char *vertexShaderPath,
 	glDeleteShader(fragmentShader);
 }
 
+void BasicShader::setMat4(const char *name, glm::mat4 value) {
+	glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, GL_FALSE,
+			   glm::value_ptr(value));
+}
+
+void BasicShader::setVec3(const char *name, glm::vec3 value) {
+	glUniform3fv(glGetUniformLocation(this->ID, name), 1,
+		     glm::value_ptr(value));
+}
+
 void BasicShader::use() { glUseProgram(this->ID); }
