@@ -6,12 +6,13 @@
 #include <string>
 
 class BasicShader {
-  private:
+      private:
 	std::string read_file(const char *path);
 
-  public:
+      public:
 	unsigned int ID; // program ID
-	BasicShader(const char *vertexShaderPath, const char *fragmentShaderPath);
+	BasicShader(const char *vertexShaderPath,
+		    const char *fragmentShaderPath);
 	void use();
 };
 
