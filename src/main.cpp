@@ -45,6 +45,48 @@ static void glfw_error_callback(int error, const char *description) {
 	fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
+void configurePhongShader(BasicShader *shader, glm::mat4 model, glm::mat4 view,
+			  glm::mat4 projection, glm::vec3 camera_eye,
+			  glm::vec3 lightcube_pos, float material[10]) {
+	// MVP
+	shader->setMat4("model", model);
+	shader->setMat4("view", view);
+	shader->setMat4("projection", projection);
+
+	// camera
+	shader->setVec3("camera_pos", camera_eye);
+
+	// material
+	shader->setVec3("material.ambient",
+			glm::vec3(material[0], material[1], material[2]));
+	shader->setVec3("material.diffuse",
+			glm::vec3(material[3], material[4], material[5]));
+	shader->setVec3("material.specular",
+			glm::vec3(material[6], material[7], material[8]));
+	shader->setFloat("material.shininess", 128.0f * material[9]);
+
+	// light
+	shader->setVec3("light.position", lightcube_pos);
+	shader->setVec3("light.ambient", glm::vec3(0.6f, 0.6f, 0.6f));
+	shader->setVec3("light.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
+	shader->setVec3("light.specular", glm::vec3(4.0f, 4.0f, 4.0f));
+}
+
+void configureLightcubeShader(BasicShader *shader, glm::mat4 model,
+			      glm::mat4 view, glm::mat4 projection,
+			      glm::vec3 lightcube_pos) {
+	shader->setMat4("model", model);
+	shader->setMat4("view", view);
+	shader->setMat4("projection", projection);
+
+	// Value for these are essentially copies of the values used
+	// in the light asset.
+	shader->setVec3("light.position", lightcube_pos);
+	shader->setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	shader->setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+	shader->setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+}
+
 int main() {
 	unsigned int VAO_asset, VBO_asset;
 	unsigned int VAO_lightcube, VBO_lightcube, EBO_lightcube;
@@ -219,51 +261,22 @@ int main() {
 	bool show_demo_window = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	BasicShader *shader_phong =
-	    new BasicShader("../src/shaders/vertex_phong.glsl",
-			    "../src/shaders/fragment_blinn_phong.glsl");
-
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::mat4(1.0f);
-	u_Model = glGetUniformLocation(shader_phong->ID, "model");
-	u_View = glGetUniformLocation(shader_phong->ID, "view");
-	u_Projection = glGetUniformLocation(shader_phong->ID, "projection");
-	u_cameraPos = glGetUniformLocation(shader_phong->ID, "camera_pos");
-	u_Material.ambient =
-	    glGetUniformLocation(shader_phong->ID, "material.ambient");
-	u_Material.diffuse =
-	    glGetUniformLocation(shader_phong->ID, "material.diffuse");
-	u_Material.specular =
-	    glGetUniformLocation(shader_phong->ID, "material.specular");
-	u_Material.shininess =
-	    glGetUniformLocation(shader_phong->ID, "material.shininess");
-	u_Light.position =
-	    glGetUniformLocation(shader_phong->ID, "light.position");
-	u_Light.ambient =
-	    glGetUniformLocation(shader_phong->ID, "light.ambient");
-	u_Light.diffuse =
-	    glGetUniformLocation(shader_phong->ID, "light.diffuse");
-	u_Light.specular =
-	    glGetUniformLocation(shader_phong->ID, "light.specular");
-
-	BasicShader *shader_lightcube =
-	    new BasicShader("../src/shaders/vertex_lightcube.glsl",
-			    "../src/shaders/fragment_lightcube.glsl");
-
-	unsigned int u_LightPosition_lightcube =
-	    glGetUniformLocation(shader_lightcube->ID, "light.position");
-	unsigned int u_LightAmbient_lightcube =
-	    glGetUniformLocation(shader_lightcube->ID, "light.ambient");
-	unsigned int u_LightDiffuse_lightcube =
-	    glGetUniformLocation(shader_lightcube->ID, "light.diffuse");
-	unsigned int u_LightSpecular_lightcube =
-	    glGetUniformLocation(shader_lightcube->ID, "light.specular");
 
 	glm::vec3 camera_eye = glm::vec3(0.0f, 4.0f, 8.0f);
 	glm::vec3 camera_center = glm::vec3(0.0f, 0.0f, 0.0f);
 	float camera_fov = 45.0f;
 	glm::vec3 lightcube_pos = glm::vec3(2.0f, 2.0f, 3.5f);
+
+	BasicShader *shader_phong =
+	    new BasicShader("../src/shaders/vertex_phong.glsl",
+			    "../src/shaders/fragment_blinn_phong.glsl");
+
+	BasicShader *shader_lightcube =
+	    new BasicShader("../src/shaders/vertex_lightcube.glsl",
+			    "../src/shaders/fragment_lightcube.glsl");
 
 	float copper[10] = {// ambient 3, diffuse 3, specular 3, shininess 1
 			    0.19125, 0.0735,   0.0225,	 0.7038,   0.27048,
@@ -306,6 +319,7 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.04313725, 0.1803921, 0.1607843, 1.0);
 
+		// kettle
 		model = glm::translate(glm::mat4(1.0f),
 				       glm::vec3(0.0f, -1.0f, -1.0f));
 		view = glm::lookAt(camera_eye, camera_center,
@@ -313,37 +327,12 @@ int main() {
 		projection = glm::perspective(glm::radians(camera_fov),
 					      (float)WIDTH / (float)HEIGHT,
 					      0.01f, 100.0f);
-
 		shader_phong->use();
+		configurePhongShader(shader_phong, model, view, projection,
+				     camera_eye, lightcube_pos, copper);
+
 		glBindVertexArray(VAO_asset);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_asset);
-
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.1f, 0.0f));
-		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
-				   glm::value_ptr(projection));
-		glUniform3fv(u_cameraPos, 1, glm::value_ptr(camera_eye));
-		glUniform3fv(
-		    u_Material.ambient, 1,
-		    glm::value_ptr(glm::vec3(copper[0], copper[1], copper[2])));
-		glUniform3fv(
-		    u_Material.diffuse, 1,
-		    glm::value_ptr(glm::vec3(copper[3], copper[4], copper[5])));
-		glUniform3fv(
-		    u_Material.specular, 1,
-		    glm::value_ptr(glm::vec3(copper[6], copper[7], copper[8])));
-		glUniform1f(u_Material.shininess, 128.0f * copper[9]);
-		glUniform3fv(u_Light.position, 1,
-			     glm::value_ptr(lightcube_pos));
-		glUniform3fv(u_Light.ambient, 1,
-			     glm::value_ptr(glm::vec3(0.6f, 0.6f, 0.6f)));
-		glUniform3fv(u_Light.diffuse, 1,
-			     glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.9f)));
-		glUniform3fv(u_Light.specular, 1,
-			     glm::value_ptr(glm::vec3(4.0f, 4.0f, 4.0f)));
-
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
 				      6 * sizeof(float), NULL);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
@@ -353,39 +342,16 @@ int main() {
 		glEnableVertexAttribArray(1);
 		glDrawArrays(GL_TRIANGLES, 0, 3 * asset_triangle_count);
 
-		glBindVertexArray(VAO_ground);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
+		// ground
 
 		model =
 		    glm::scale(glm::mat4(1.0f), glm::vec3(10.0f, 0.1f, 10.0f));
-		model = glm::translate(model, glm::vec3(0.0f, -0.05f, 0.0f));
-		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
-				   glm::value_ptr(projection));
-		glUniform3fv(u_cameraPos, 1, glm::value_ptr(camera_eye));
-		glUniform3fv(
-		    u_Material.ambient, 1,
-		    glm::value_ptr(glm::vec3(white_plastic[0], white_plastic[1],
-					     white_plastic[2])));
-		glUniform3fv(
-		    u_Material.diffuse, 1,
-		    glm::value_ptr(glm::vec3(white_plastic[3], white_plastic[4],
-					     white_plastic[5])));
-		glUniform3fv(
-		    u_Material.specular, 1,
-		    glm::value_ptr(glm::vec3(white_plastic[6], white_plastic[7],
-					     white_plastic[8])));
-		glUniform1f(u_Material.shininess, 128.0f * white_plastic[9]);
-		glUniform3fv(u_Light.position, 1,
-			     glm::value_ptr(lightcube_pos));
-		glUniform3fv(u_Light.ambient, 1,
-			     glm::value_ptr(glm::vec3(0.6f, 0.6f, 0.6f)));
-		glUniform3fv(u_Light.diffuse, 1,
-			     glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.9f)));
-		glUniform3fv(u_Light.specular, 1,
-			     glm::value_ptr(glm::vec3(4.0f, 4.0f, 4.0f)));
+		model = glm::translate(model, glm::vec3(0.0f, -10.0f, 0.0f));
+		configurePhongShader(shader_phong, model, view, projection,
+				     camera_eye, lightcube_pos, white_plastic);
 
+		glBindVertexArray(VAO_ground);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
 				      6 * sizeof(float), NULL);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
@@ -395,25 +361,14 @@ int main() {
 		glEnableVertexAttribArray(1);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		model = glm::translate(glm::mat4(1.0f), lightcube_pos);
 		shader_lightcube->use();
+		configureLightcubeShader(shader_lightcube, model, view,
+					 projection, lightcube_pos);
+
 		glBindVertexArray(VAO_lightcube);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_lightcube);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_lightcube);
-		model = glm::translate(glm::mat4(1.0f), lightcube_pos);
-		glUniformMatrix4fv(u_Model, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(u_View, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(u_Projection, 1, GL_FALSE,
-				   glm::value_ptr(projection));
-		// Value for these are essentially copies of the values used
-		// in the light asset.
-		glUniform3fv(u_LightPosition_lightcube, 1,
-			     glm::value_ptr(lightcube_pos));
-		glUniform3fv(u_LightAmbient_lightcube, 1,
-			     glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
-		glUniform3fv(u_LightDiffuse_lightcube, 1,
-			     glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
-		glUniform3fv(u_LightSpecular_lightcube, 1,
-			     glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
 				      3 * sizeof(float), NULL);

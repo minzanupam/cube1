@@ -22,6 +22,8 @@ class BasicShader {
 
 	void setVec3(const char *name, glm::vec3 value);
 
+	void setFloat(const char *name, float value);
+
 	void use();
 };
 

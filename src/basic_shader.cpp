@@ -80,4 +80,8 @@ void BasicShader::setVec3(const char *name, glm::vec3 value) {
 		     glm::value_ptr(value));
 }
 
+void BasicShader::setFloat(const char *name, float value) {
+	glUniform1f(glGetUniformLocation(this->ID, name), value);
+}
+
 void BasicShader::use() { glUseProgram(this->ID); }
