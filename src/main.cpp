@@ -290,14 +290,6 @@ int main() {
 	    new BasicShader("../src/shaders/vertex_simple_depth.glsl",
 			    "../src/shaders/fragment_empty.glsl");
 
-	glm::mat4 model_dethmap = glm::mat4(1.0f);
-	glm::mat4 lightSpaceMatrix_depthmap = glm::mat4(1.0f);
-
-	unsigned int u_Model_depthmap =
-	    glGetUniformLocation(shader_depthmap->ID, "model");
-	unsigned int u_LightSpaceMatrix_depthmap =
-	    glGetUniformLocation(shader_depthmap->ID, "lightSpaceMatrix");
-
 	while (!glfwWindowShouldClose(window)) {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
